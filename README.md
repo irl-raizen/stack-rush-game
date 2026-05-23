@@ -2,6 +2,11 @@
 
 Stack Rush: Perfect Tower is a high-juice, physics-enhanced block-stacking arcade web game built with Next.js, React, Tailwind CSS v4, Framer Motion, and HTML5 Canvas. Inspired by classic stacking games, it takes the gameplay experience to the next level with dynamic camera movement, screen shake, slow-motion near-miss events, combo tiers, daily rewards, unlockable block skins, and more.
 
+### 📱 Android APK Installer
+
+An Android APK build of the game is available directly in this repository. You can download and install it on your Android device:
+👉 **[Download stack-rush-game.apk](stack-rush-game.apk)**
+
 ---
 
 ## 🎮 Key Gameplay Features
