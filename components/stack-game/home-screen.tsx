@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Play, Palette, Trophy, Coins, Flame } from "lucide-react"
+import { Play, Palette, Trophy, Coins, Flame, Users } from "lucide-react"
 import { SKINS } from "@/lib/skins"
 import type { GameStorage } from "@/hooks/use-game-storage"
 import { DailyRewardCard } from "./daily-reward-card"
@@ -11,6 +11,7 @@ interface HomeScreenProps {
   onPlay: () => void
   onSkins: () => void
   onLeaderboard: () => void
+  onMultiplayer: () => void
   onClaimDaily: () => number
   onClaimWelcome: () => number
 }
@@ -20,6 +21,7 @@ export function HomeScreen({
   onPlay,
   onSkins,
   onLeaderboard,
+  onMultiplayer,
   onClaimDaily,
   onClaimWelcome,
 }: HomeScreenProps) {
@@ -133,6 +135,8 @@ export function HomeScreen({
           <span className="text-lg tracking-wide">PLAY</span>
           <span className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-700 group-hover:translate-x-full" />
         </motion.button>
+
+        <motion.button onClick={onMultiplayer} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-primary/90 font-semibold text-primary-foreground shadow-lg"><Users size={18} aria-hidden /><span>Compete with friends</span></motion.button>
 
         {/* Secondary actions */}
         <div className="grid w-full max-w-xs grid-cols-2 gap-3">
