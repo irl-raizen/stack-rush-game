@@ -12,6 +12,7 @@ interface HomeScreenProps {
   onSkins: () => void
   onLeaderboard: () => void
   onMultiplayer: () => void
+  onProfile: () => void
   onClaimDaily: () => number
   onClaimWelcome: () => number
 }
@@ -22,6 +23,7 @@ export function HomeScreen({
   onSkins,
   onLeaderboard,
   onMultiplayer,
+  onProfile,
   onClaimDaily,
   onClaimWelcome,
 }: HomeScreenProps) {
@@ -60,7 +62,7 @@ export function HomeScreen({
       </div>
 
       {/* Top bar: coins + best + best combo */}
-      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-6">
+      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-6"><button onClick={onProfile} className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-white/10">Profile</button>
         <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-inset ring-white/10">
           <Coins size={16} className="text-amber-300" aria-hidden />
           <span className="text-sm font-semibold tabular-nums">{storage.coins}</span>

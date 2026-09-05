@@ -13,10 +13,11 @@ import { SkinsScreen } from "@/components/stack-game/skins-screen"
 import { LeaderboardScreen } from "@/components/stack-game/leaderboard-screen"
 import { InterstitialAd } from "@/components/stack-game/interstitial-ad"
 import { MultiplayerScreen } from "@/components/stack-game/multiplayer-screen"
+import { ProfileScreen } from "@/components/stack-game/profile-screen"
 import { useGameStorage } from "@/hooks/use-game-storage"
 import { meetsSkillLock, SKINS } from "@/lib/skins"
 
-type Screen = "splash" | "home" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer"
+type Screen = "splash" | "home" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
@@ -106,6 +107,7 @@ export default function Page() {
             onSkins={() => setScreen("skins")}
             onLeaderboard={() => setScreen("leaderboard")}
             onMultiplayer={() => setScreen("multiplayer")}
+            onProfile={() => setScreen("profile")}
             onClaimDaily={claimDaily}
             onClaimWelcome={claimWelcome}
           />
@@ -140,6 +142,7 @@ export default function Page() {
         )}
 
         {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" onBack={() => setScreen("home")} />}
+        {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} />}
       </AnimatePresence>
 
       {/* Game Over overlays the game canvas */}
