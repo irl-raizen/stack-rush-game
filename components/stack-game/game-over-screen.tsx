@@ -62,7 +62,7 @@ export function GameOverScreen({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1, rotate: [0, -6, 6, 0] }}
-              transition={{ delay: 0.1, type: "spring", stiffness: 180 }}
+              transition={{ delay: 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               className="flex items-center gap-2 rounded-full bg-amber-400 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-slate-950"
             >
               <Sparkles size={12} aria-hidden />
