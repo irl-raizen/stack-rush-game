@@ -11,7 +11,7 @@ interface SkinsScreenProps {
   storage: GameStorage
   onBack: () => void
   onSelect: (skin: SkinId) => void
-  onUnlock: (skin: SkinId, cost: number) => boolean
+  onUnlock: (skin: SkinId, cost: number) => boolean | Promise<boolean>
 }
 
 /**
@@ -76,7 +76,7 @@ export function SkinsScreen({ storage, onBack, onSelect, onUnlock }: SkinsScreen
           const isSkillGated = !!skin.skillLock
           const shaking = shakeId === id
 
-          const handleTap = () => {
+          const handleTap = async () => {
             sfx.ui()
             if (unlocked) {
               if (selected) {
@@ -97,7 +97,7 @@ export function SkinsScreen({ storage, onBack, onSelect, onUnlock }: SkinsScreen
               flash(`Need ${skin.cost - storage.coins} more coins`, "warn")
               return
             }
-            const ok = onUnlock(id, skin.cost)
+            const ok = await onUnlock(id, skin.cost)
             if (ok) flash(`${skin.name} unlocked & equipped`)
           }
 

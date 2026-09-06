@@ -12,6 +12,7 @@ interface GameScreenProps {
   hapticsEnabled: boolean
   onExit: () => void
   onGameOver: (score: number, coinsEarned: number, bestCombo: number, perfects: number) => void
+  onScoreUpdate?: (score: number) => void
 }
 
 /** Per-tier color for the floating PERFECT callout. */
@@ -22,7 +23,7 @@ const MULTIPLIER_STYLE: Record<1 | 2 | 3 | 5, { label: string; bg: string; glow:
   5: { label: "PERFECT x5", bg: "bg-rose-500", glow: "rgba(244,63,94,0.75)" },
 }
 
-export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver }: GameScreenProps) {
+export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver, onScoreUpdate }: GameScreenProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const engineRef = useRef<StackGameEngine | null>(null)
@@ -48,6 +49,7 @@ export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver }: GameS
   const handleDrop = useCallback(
     (r: DropResult) => {
       setScore(r.score)
+      onScoreUpdate?.(r.score)
       setCombo(r.combo)
       setCoins(r.totalCoins)
       setMultiplier(r.multiplier)
@@ -56,7 +58,7 @@ export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver }: GameS
         perfectsRef.current += 1
         sfx.perfect(r.combo)
         sfx.coin()
-        if (r.multiplier >= 2) sfx.multiplier(r.multiplier)
+        if (r.multiplier === 2 || r.multiplier === 3 || r.multiplier === 5) sfx.multiplier(r.multiplier)
         setPerfectFloat({ id: Date.now(), tier: r.multiplier })
         setPerfectFlashId((n) => n + 1)
         if (r.scoreGain > 0) setScoreGainPopup({ id: Date.now(), value: r.scoreGain })
@@ -79,7 +81,7 @@ export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver }: GameS
         }
       }
     },
-    [hapticsEnabled],
+    [hapticsEnabled, onScoreUpdate],
   )
 
   const handleGameOver = useCallback(
