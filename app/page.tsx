@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
-import { submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
+import { claimDailyReward, purchaseSkin, submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
 import { GameScreen } from "@/components/stack-game/game-screen"
@@ -87,6 +87,22 @@ export default function Page() {
     setRunKey((k) => k + 1)
     setScreen("game")
   }
+  const handleCloudUnlock = async (skinId: typeof state.selectedSkin, cost: number) => {
+    try {
+      const result = await purchaseSkin({ skinId, price: cost })
+      unlockSkin(skinId, cost)
+      selectSkin(skinId)
+      return result.alreadyOwned || result.coinsBalance >= 0
+    } catch {
+      return false
+    }
+  }
+  const handleDailyClaim = () => {
+    void claimDailyReward().then((result) => {
+      if (result.claimed) claimDaily()
+    }).catch(() => undefined)
+    return claimDaily()
+  }
 
   if (sessionPending) return <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">Loading your player profile…</div>
   if (!session?.user) {
@@ -108,7 +124,7 @@ export default function Page() {
             onLeaderboard={() => setScreen("leaderboard")}
             onMultiplayer={() => setScreen("multiplayer")}
             onProfile={() => setScreen("profile")}
-            onClaimDaily={claimDaily}
+            onClaimDaily={handleDailyClaim}
             onClaimWelcome={claimWelcome}
           />
         )}
@@ -129,7 +145,7 @@ export default function Page() {
             storage={state}
             onBack={() => setScreen("home")}
             onSelect={selectSkin}
-            onUnlock={unlockSkin}
+            onUnlock={handleCloudUnlock}
           />
         )}
 

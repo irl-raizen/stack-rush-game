@@ -34,8 +34,8 @@ export function GameOverScreen({
     try {
       if (typeof navigator !== "undefined" && "share" in navigator) {
         await (navigator as Navigator).share({ title: "Stack Rush", text: shareText })
-      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(shareText)
+      } else if (typeof navigator !== "undefined") {
+        await window.navigator.clipboard?.writeText(shareText)
       }
     } catch {
       /* user cancelled share */
