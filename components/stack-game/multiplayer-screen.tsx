@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Ably from "ably"
 import { Copy, Radio, RefreshCw, X } from "lucide-react"
 import { createRoom, getRoomStatus, joinRoom } from "@/app/actions/multiplayer"
 
@@ -13,7 +14,31 @@ export function MultiplayerScreen({ onBack }: { onBack: () => void }) {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   async function refresh(silent = false) { if (!room) return; try { setRoom(await getRoomStatus(room.roomCode)); if (!silent) setMessage("Room status refreshed.") } catch { setMessage("This room is no longer available.") } }
-  useEffect(() => { if (!room) return; const timer = window.setInterval(() => void refresh(true), 2500); return () => window.clearInterval(timer) }, [room?.roomCode])
+  useEffect(() => {
+    if (!room) return
+    let realtime: Ably.Realtime | null = null
+    let channel: Ably.RealtimeChannel | null = null
+    let cancelled = false
+    void (async () => {
+      try {
+        realtime = new Ably.Realtime({ authUrl: "/api/ably/token", authMethod: "GET" })
+        channel = realtime.channels.get(`stack-rush:${room.id}`)
+        await channel.subscribe((message) => {
+          if (cancelled) return
+          if (message.name === "room.ready") setRoom((current) => current ? { ...current, status: "ready" } : current)
+          if (message.name === "score.updated") {
+            const data = message.data as { score?: number; side?: "host" | "guest" }
+            if (typeof data.score !== "number") return
+            setRoom((current) => current ? { ...current, hostScore: data.side === "host" && typeof data.score === "number" ? data.score : current.hostScore, guestScore: data.side === "guest" && typeof data.score === "number" ? data.score : current.guestScore } : current)
+          }
+        })
+        if (!cancelled) setMessage("Live connection active.")
+      } catch {
+        if (!cancelled) setMessage("Live connection unavailable. Use refresh to check the room.")
+      }
+    })()
+    return () => { cancelled = true; if (channel) void channel.unsubscribe(); realtime?.close() }
+  }, [room?.id])
   async function host() { setLoading(true); try { const result = await createRoom(mode); const url = `${window.location.origin}/challenge/${result.slug}`; setInvite(url); setCode(result.roomCode); await navigator.clipboard?.writeText(url); setMessage(`Room ${result.roomCode} created. Invite copied.`); setRoom(await getRoomStatus(result.roomCode)) } catch { setMessage("Unable to create the room right now.") } finally { setLoading(false) } }
   async function join() { setLoading(true); try { const result = await joinRoom(code); setRoom(await getRoomStatus(code)); setMessage(`Joined ${result.mode === "live" ? "live race" : "async challenge"}.`) } catch { setMessage("That room is unavailable or already started.") } finally { setLoading(false) } }
   return <main className="min-h-screen bg-background px-5 py-8 text-foreground"><div className="mx-auto w-full max-w-lg"><button onClick={onBack} className="mb-8 flex items-center gap-2 text-sm text-muted-foreground"><X size={16} /> Back</button><p className="font-mono text-xs uppercase tracking-[0.24em] text-primary">COMPETE</p><h1 className="mt-3 text-4xl font-bold">Play against a friend</h1><p className="mt-3 text-muted-foreground">Create a live room or send an async challenge.</p><div className="mt-8 grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">{(["live", "async"] as const).map(value => <button key={value} onClick={() => setMode(value)} className={`rounded-xl px-4 py-3 text-sm font-semibold ${mode === value ? "bg-card shadow" : "text-muted-foreground"}`}>{value === "live" ? "Live race" : "Async challenge"}</button>)}</div><div className="mt-5 rounded-3xl border border-border bg-card p-5"><button disabled={loading} onClick={() => void host()} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground disabled:opacity-60"><Radio size={18} />{loading ? "Creating…" : "Create invite"}</button>{invite && <div className="mt-4 flex items-center gap-2 rounded-xl bg-muted p-3 text-xs"><span className="min-w-0 flex-1 truncate">{invite}</span><button aria-label="Copy invite" onClick={() => navigator.clipboard?.writeText(invite)}><Copy size={16} /></button></div>}</div><div className="my-5 flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground"><span className="h-px flex-1 bg-border" />or join<span className="h-px flex-1 bg-border" /></div><div className="flex gap-2"><input value={code} onChange={event => setCode(event.target.value.toUpperCase())} placeholder="Room code" className="min-w-0 flex-1 rounded-xl border border-border bg-card px-4 py-3" /><button disabled={loading || code.length < 4} onClick={() => void join()} className="rounded-xl border border-border px-5 py-3 font-semibold disabled:opacity-50">Join</button></div>{message && <p className="mt-4 rounded-xl bg-muted p-3 text-sm text-muted-foreground">{message}</p>}{room && <div className="mt-5 rounded-3xl border border-border bg-card p-5"><div className="flex items-center justify-between"><div><p className="font-semibold">Room {room.roomCode}</p><p className="text-sm text-muted-foreground">{room.status} · {room.mode}</p></div><button onClick={() => void refresh()} aria-label="Refresh room"><RefreshCw size={17} /></button></div><div className="mt-5 grid grid-cols-2 gap-3 text-center"><div className="rounded-2xl bg-muted p-4"><p className="text-xs text-muted-foreground">Host</p><p className="text-3xl font-bold">{room.hostScore}</p></div><div className="rounded-2xl bg-muted p-4"><p className="text-xs text-muted-foreground">Opponent</p><p className="text-3xl font-bold">{room.guestScore}</p></div></div></div>}</div></main>
