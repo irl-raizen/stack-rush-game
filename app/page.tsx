@@ -157,7 +157,7 @@ export default function Page() {
           />
         )}
 
-        {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" onBack={() => setScreen("home")} />}
+        {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerName={session.user.name} onBack={() => setScreen("home")} />}
         {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} />}
       </AnimatePresence>
 
