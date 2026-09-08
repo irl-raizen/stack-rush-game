@@ -30,12 +30,22 @@ export function GameOverScreen({
   const skin = SKINS[skinId]
 
   const apkDownloadUrl = "https://drive.google.com/uc?export=download&id=1Pf7uqNDt9lIjPhpm_HDSerfBM4Jtn1IK"
+  const appDeepLink = "stackrush://open"
+
+  const openStackRush = () => {
+    if (typeof window === "undefined") return
+    const fallback = window.setTimeout(() => { window.location.assign(apkDownloadUrl) }, 1400)
+    const cancelFallback = () => window.clearTimeout(fallback)
+    document.addEventListener("visibilitychange", cancelFallback, { once: true })
+    window.location.assign(appDeepLink)
+  }
 
   const handleShare = async () => {
     const shareText = `I scored ${score} in Stack Rush: Perfect Tower! Can you beat me?`
     try {
       if (typeof navigator !== "undefined" && "share" in navigator) {
-        await (navigator as Navigator).share({ title: "Stack Rush", text: shareText })
+        await (navigator as Navigator).share({ title: "Stack Rush", text: shareText, url: window.location.href })
+        openStackRush()
       } else if (typeof navigator !== "undefined") {
         await window.navigator.clipboard?.writeText(shareText)
       }
@@ -122,10 +132,6 @@ export function GameOverScreen({
               <span>Watch ad to continue</span>
             </motion.button>
           )}
-
-          <a href={apkDownloadUrl} target="_blank" rel="noreferrer" className="mt-4 flex w-full items-center justify-center rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-3 text-sm font-semibold text-cyan-100 transition-colors hover:bg-cyan-300/20">
-            Download Stack Rush APK
-          </a>
 
           {/* Primary actions */}
           <div className="mt-5 flex w-full flex-col gap-3">
