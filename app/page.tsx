@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
 import { claimDailyReward, purchaseSkin, submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
+import { finishRoom } from "@/app/actions/multiplayer"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
 import { GameScreen } from "@/components/stack-game/game-screen"
@@ -34,6 +35,7 @@ export default function Page() {
     isNewBest: boolean
   } | null>(null)
   const [showAd, setShowAd] = useState(false)
+  const [activeRoomId, setActiveRoomId] = useState<string | null>(null)
 
   const {
     state,
@@ -136,6 +138,7 @@ export default function Page() {
             hapticsEnabled={state.hapticsEnabled}
             onExit={() => setScreen("home")}
             onGameOver={handleGameOver}
+            onMatchFinish={activeRoomId ? (score) => { void finishRoom(activeRoomId, score).catch(() => undefined) } : undefined}
           />
         )}
 
@@ -157,7 +160,7 @@ export default function Page() {
           />
         )}
 
-        {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerName={session.user.name} onBack={() => setScreen("home")} onMatchStart={() => startGame()} />}
+        {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerName={session.user.name} onBack={() => setScreen("home")} onMatchStart={(roomId) => { setActiveRoomId(roomId); startGame() }} />}
         {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} />}
       </AnimatePresence>
 
