@@ -36,6 +36,7 @@ export default function Page() {
   } | null>(null)
   const [showAd, setShowAd] = useState(false)
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null)
+  const [multiplayerResult, setMultiplayerResult] = useState<{ winner: "host" | "guest" | "draw"; hostScore: number; guestScore: number } | null>(null)
 
   const {
     state,
@@ -86,6 +87,7 @@ export default function Page() {
   )
 
   const startGame = () => {
+    setMultiplayerResult(null)
     setRunKey((k) => k + 1)
     setScreen("game")
   }
@@ -138,7 +140,7 @@ export default function Page() {
             hapticsEnabled={state.hapticsEnabled}
             onExit={() => setScreen("home")}
             onGameOver={handleGameOver}
-            onMatchFinish={activeRoomId ? (score) => { void finishRoom(activeRoomId, score).catch(() => undefined) } : undefined}
+            onMatchFinish={activeRoomId ? (score) => { void finishRoom(activeRoomId, score).then((result) => { if (result.winner) setMultiplayerResult({ winner: result.winner as "host" | "guest" | "draw", hostScore: result.hostScore, guestScore: result.guestScore }) }).catch(() => setMultiplayerResult(null)) } : undefined}
           />
         )}
 
@@ -174,7 +176,8 @@ export default function Page() {
           coinsEarned={lastRun.coinsEarned}
           isNewBest={lastRun.isNewBest}
           onRetry={startGame}
-          onHome={() => setScreen("home")}
+          onHome={() => { setActiveRoomId(null); setMultiplayerResult(null); setScreen("home") }}
+          multiplayerResult={multiplayerResult ?? undefined}
         />
       )}
 

@@ -14,6 +14,7 @@ interface GameOverScreenProps {
   onRetry: () => void
   onHome: () => void
   onContinueWithAd?: () => void
+  multiplayerResult?: { winner: "host" | "guest" | "draw"; hostScore: number; guestScore: number }
 }
 
 export function GameOverScreen({
@@ -26,6 +27,7 @@ export function GameOverScreen({
   onRetry,
   onHome,
   onContinueWithAd,
+  multiplayerResult,
 }: GameOverScreenProps) {
   const skin = SKINS[skinId]
 
@@ -83,6 +85,8 @@ export function GameOverScreen({
           ) : (
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/50">Game Over</p>
           )}
+
+          {multiplayerResult && <div className="mt-4 w-full rounded-2xl border border-cyan-300/30 bg-cyan-300/10 p-4 text-center"><p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-200">Multiplayer result</p><p className="mt-2 text-2xl font-black">{multiplayerResult.winner === "draw" ? "Draw match" : multiplayerResult.winner === "host" ? "Player 1 wins" : "Player 2 wins"}</p><p className="mt-1 text-sm text-white/70">{multiplayerResult.hostScore} — {multiplayerResult.guestScore}</p></div>}
 
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
