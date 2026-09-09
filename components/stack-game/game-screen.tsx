@@ -13,6 +13,7 @@ interface GameScreenProps {
   onExit: () => void
   onGameOver: (score: number, coinsEarned: number, bestCombo: number, perfects: number) => void
   onScoreUpdate?: (score: number) => void
+  onMatchFinish?: (score: number) => void
 }
 
 /** Per-tier color for the floating PERFECT callout. */
@@ -23,7 +24,7 @@ const MULTIPLIER_STYLE: Record<1 | 2 | 3 | 5, { label: string; bg: string; glow:
   5: { label: "PERFECT x5", bg: "bg-rose-500", glow: "rgba(244,63,94,0.75)" },
 }
 
-export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver, onScoreUpdate }: GameScreenProps) {
+export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver, onScoreUpdate, onMatchFinish }: GameScreenProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const engineRef = useRef<StackGameEngine | null>(null)
@@ -91,7 +92,7 @@ export function GameScreen({ skinId, hapticsEnabled, onExit, onGameOver, onScore
         navigator.vibrate?.([20, 40, 80])
       }
       // Let the impact / debris settle before transitioning.
-      setTimeout(() => onGameOver(finalScore, coinsEarned, bestCombo, perfectsRef.current), 750)
+      setTimeout(() => { onMatchFinish?.(finalScore); onGameOver(finalScore, coinsEarned, bestCombo, perfectsRef.current) }, 750)
     },
     [hapticsEnabled, onGameOver],
   )
