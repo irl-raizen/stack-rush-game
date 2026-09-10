@@ -8,7 +8,7 @@ import { createRoom, getRoomStatus, joinRoom, rematchRoom, setRoomReady } from "
 type Room = { id: string; roomCode: string; mode: string; status: string; hostName?: string; guestName?: string | null; hostScore: number; guestScore: number; hostReady?: boolean; guestReady?: boolean; hostFinished?: boolean; guestFinished?: boolean; hostUserId?: string | null; guestUserId?: string | null; startAt?: string | Date | null }
 function initials(value: string) { return value.trim().split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "P" }
 
-export function MultiplayerScreen({ onBack, playerName, onMatchStart }: { onBack: () => void; playerName: string; onMatchStart: (roomId: string) => void }) {
+export function MultiplayerScreen({ onBack, playerName, onMatchStart }: { onBack: () => void; playerName: string; onMatchStart: (room: { id: string; hostName?: string; guestName?: string | null }) => void }) {
   const [mode, setMode] = useState<"live" | "async">("live")
   const [code, setCode] = useState("")
   const [invite, setInvite] = useState("")
@@ -34,7 +34,7 @@ export function MultiplayerScreen({ onBack, playerName, onMatchStart }: { onBack
     return () => { void channel.unsubscribe(); realtime.close() }
   }, [room?.id])
 
-  useEffect(() => { if (!room || room.status !== "countdown" || !room.startAt) return; const timer = window.setTimeout(() => onMatchStart(room.id), Math.max(0, new Date(room.startAt).getTime() - Date.now())); return () => window.clearTimeout(timer) }, [room?.status, room?.startAt, room?.id, onMatchStart])
+  useEffect(() => { if (!room || room.status !== "countdown" || !room.startAt) return; const timer = window.setTimeout(() => onMatchStart({ id: room.id, hostName: room.hostName, guestName: room.guestName }), Math.max(0, new Date(room.startAt).getTime() - Date.now())); return () => window.clearTimeout(timer) }, [room?.status, room?.startAt, room?.id, onMatchStart])
   async function refresh() { if (!room) return; try { setRoom(await getRoomStatus(room.roomCode)); setMessage("Room status refreshed.") } catch { setMessage("This room is no longer available.") } }
   async function host() { setLoading(true); try { const result = await createRoom(mode); const url = `${window.location.origin}/challenge/${result.slug}`; setInvite(url); setCode(result.roomCode); await navigator.clipboard?.writeText(url); setMessage(`Room ${result.roomCode} created. Invite copied.`); setRoom(await getRoomStatus(result.roomCode)) } catch { setMessage("Unable to create the room right now.") } finally { setLoading(false) } }
   async function join() { setLoading(true); try { const result = await joinRoom(code); setRoom(await getRoomStatus(code)); setMessage(`Joined ${result.mode === "live" ? "live race" : "async challenge"}.`) } catch { setMessage("That room is unavailable or already started.") } finally { setLoading(false) } }
