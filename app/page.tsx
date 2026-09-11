@@ -141,7 +141,7 @@ export default function Page() {
             hapticsEnabled={state.hapticsEnabled}
             onExit={() => setScreen("home")}
             onGameOver={handleGameOver}
-            onMatchFinish={activeRoomId ? (score) => { void finishRoom(activeRoomId, score).then((result) => { if (result.winner) setMultiplayerResult({ winner: result.winner as "host" | "guest" | "draw", hostScore: result.hostScore, guestScore: result.guestScore, hostName: multiplayerNames?.hostName, guestName: multiplayerNames?.guestName }) }).catch(() => setMultiplayerResult(null)) } : undefined}
+            onMatchFinish={activeRoomId ? (score) => { void finishRoom(activeRoomId, score).then((result) => { if (result.winner) setMultiplayerResult({ winner: result.winner as "host" | "guest" | "draw", hostScore: result.hostScore, guestScore: result.guestScore, hostName: result.hostName ?? multiplayerNames?.hostName, guestName: result.guestName ?? multiplayerNames?.guestName }) }).catch(() => setMultiplayerResult(null)) } : undefined}
           />
         )}
 
@@ -163,7 +163,7 @@ export default function Page() {
           />
         )}
 
-        {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerName={session.user.name} onBack={() => setScreen("home")} onMatchStart={(room) => { setActiveRoomId(room.id); setMultiplayerNames({ hostName: room.hostName, guestName: room.guestName ?? undefined }); startGame() }} />}
+        {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerId={session.user.id} playerName={session.user.name} onBack={() => setScreen("home")} onMatchStart={(room) => { setActiveRoomId(room.id); setMultiplayerNames({ hostName: room.hostName, guestName: room.guestName ?? undefined }); startGame() }} />}
         {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} />}
       </AnimatePresence>
 
