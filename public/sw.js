@@ -1,6 +1,8 @@
 /* Stack Rush — minimal offline-first service worker */
-const CACHE = "stack-rush-v1"
-const CORE = ["/", "/manifest.json", "/icon.svg"]
+const CACHE = "stack-rush-v2"
+const CORE = ["/manifest.json", "/icon.svg"]
+const NEXT_ASSET = "/_next/"
+const API_PREFIX = "/api/"
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -22,7 +24,14 @@ self.addEventListener("fetch", (event) => {
   const req = event.request
   if (req.method !== "GET") return
 
-  // Network-first for navigations, cache-first for static assets.
+  const url = new URL(req.url)
+  // Never cache Next.js chunks, RSC payloads, API responses, or development/HMR traffic.
+  if (url.pathname.startsWith(NEXT_ASSET) || url.pathname.startsWith(API_PREFIX) || url.pathname.includes("__nextjs_") || url.searchParams.has("_rsc")) {
+    event.respondWith(fetch(req))
+    return
+  }
+
+  // Network-first for navigations, cache-first for stable static assets.
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req)
