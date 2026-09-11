@@ -8,7 +8,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter()
   const [error, setError] = useState("")
   const [pending, setPending] = useState(false)
-  async function signOutExistingSession() { try { await authClient.signOut() } catch { /* Continue with the new authentication attempt. */ } }
+  async function signOutExistingSession() { try { await authClient.signOut(); await new Promise((resolve) => window.setTimeout(resolve, 150)) } catch { /* Continue with the new authentication attempt. */ } }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (pending) return
