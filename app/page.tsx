@@ -48,7 +48,7 @@ export default function Page() {
     selectSkin,
     claimDaily,
     claimWelcome,
-  } = useGameStorage()
+  } = useGameStorage(session?.user?.id ?? null)
 
   // Auto-grant any skill-gated skins as soon as the player's stats qualify.
   useEffect(() => {

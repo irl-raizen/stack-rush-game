@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import type { SkinId } from "@/lib/skins"
 
-const STORAGE_KEY = "stack-rush-v2"
+const STORAGE_KEY_PREFIX = "stack-rush-v2"
 const LEGACY_KEY = "stack-rush-v1"
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -39,11 +39,14 @@ const DEFAULT: GameStorage = {
   dailyStreak: 0,
 }
 
-function load(): GameStorage {
+function storageKey(userId: string | null) { return userId ? `${STORAGE_KEY_PREFIX}:${userId}` : null }
+
+function load(userId: string | null): GameStorage {
   if (typeof window === "undefined") return DEFAULT
   try {
-    const raw =
-      window.localStorage.getItem(STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_KEY)
+    const key = storageKey(userId)
+    if (!key) return DEFAULT
+    const raw = window.localStorage.getItem(key) ?? null
     if (!raw) return DEFAULT
     const parsed = JSON.parse(raw) as Partial<GameStorage>
     return {
@@ -56,10 +59,12 @@ function load(): GameStorage {
   }
 }
 
-function save(data: GameStorage) {
+function save(userId: string | null, data: GameStorage) {
   if (typeof window === "undefined") return
+  const key = storageKey(userId)
+  if (!key) return
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    window.localStorage.setItem(key, JSON.stringify(data))
   } catch {
     /* ignore quota errors */
   }
@@ -80,14 +85,15 @@ export function dailyCooldownMs(last: number | null): number {
   return Math.max(0, DAY_MS - elapsed)
 }
 
-export function useGameStorage() {
+export function useGameStorage(userId: string | null) {
   const [state, setState] = useState<GameStorage>(DEFAULT)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    setState(load())
+    setHydrated(false)
+    setState(load(userId))
     setHydrated(true)
-  }, [])
+  }, [userId])
 
   const update = useCallback(
     (patch: Partial<GameStorage> | ((s: GameStorage) => GameStorage)) => {
@@ -96,7 +102,7 @@ export function useGameStorage() {
           typeof patch === "function"
             ? (patch as (s: GameStorage) => GameStorage)(prev)
             : { ...prev, ...patch }
-        save(next)
+        save(userId, next)
         return next
       })
     },
@@ -114,7 +120,7 @@ export function useGameStorage() {
           totalRuns: prev.totalRuns + 1,
           coins: prev.coins + coinsEarned,
         }
-        save(next)
+        save(userId, next)
         return next
       })
     },
@@ -133,7 +139,7 @@ export function useGameStorage() {
         unlockedSkins: [...prev.unlockedSkins, skinId],
         selectedSkin: skinId,
       }
-      save(next)
+      save(userId, next)
       return next
     })
     return success
@@ -147,7 +153,7 @@ export function useGameStorage() {
         ...prev,
         unlockedSkins: [...prev.unlockedSkins, skinId],
       }
-      save(next)
+      save(userId, next)
       return next
     })
   }, [])
@@ -156,7 +162,7 @@ export function useGameStorage() {
     setState((prev) => {
       if (!prev.unlockedSkins.includes(skinId)) return prev
       const next = { ...prev, selectedSkin: skinId }
-      save(next)
+      save(userId, next)
       return next
     })
   }, [])
@@ -179,7 +185,7 @@ export function useGameStorage() {
         lastDailyClaim: now,
         dailyStreak: streak,
       }
-      save(next)
+      save(userId, next)
       return next
     })
     return granted
@@ -195,7 +201,7 @@ export function useGameStorage() {
         coins: prev.coins + WELCOME_REWARD,
         welcomeClaimed: true,
       }
-      save(next)
+      save(userId, next)
       return next
     })
     return granted
