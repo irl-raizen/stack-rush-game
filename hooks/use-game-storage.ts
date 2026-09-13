@@ -106,7 +106,7 @@ export function useGameStorage(userId: string | null) {
         return next
       })
     },
-    [],
+    [userId],
   )
 
   const submitRun = useCallback(
@@ -124,7 +124,7 @@ export function useGameStorage(userId: string | null) {
         return next
       })
     },
-    [],
+    [userId],
   )
 
   const unlockSkin = useCallback((skinId: SkinId, cost: number) => {
@@ -143,7 +143,7 @@ export function useGameStorage(userId: string | null) {
       return next
     })
     return success
-  }, [])
+  }, [userId])
 
   /** Grant a skin for free after a skill milestone is reached. */
   const grantSkin = useCallback((skinId: SkinId) => {
@@ -156,7 +156,7 @@ export function useGameStorage(userId: string | null) {
       save(userId, next)
       return next
     })
-  }, [])
+  }, [userId])
 
   const selectSkin = useCallback((skinId: SkinId) => {
     setState((prev) => {
@@ -165,7 +165,7 @@ export function useGameStorage(userId: string | null) {
       save(userId, next)
       return next
     })
-  }, [])
+  }, [userId])
 
   /** Returns coins granted (0 if unavailable). */
   const claimDaily = useCallback((): number => {
@@ -189,7 +189,7 @@ export function useGameStorage(userId: string | null) {
       return next
     })
     return granted
-  }, [])
+  }, [userId])
 
   const claimWelcome = useCallback((): number => {
     let granted = 0
@@ -205,7 +205,7 @@ export function useGameStorage(userId: string | null) {
       return next
     })
     return granted
-  }, [])
+  }, [userId])
 
   return {
     state,

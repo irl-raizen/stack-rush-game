@@ -22,6 +22,7 @@ type Screen = "splash" | "home" | "game" | "gameover" | "skins" | "leaderboard" 
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
+const RUN_COUNT_PREFIX = "sr-runs"
 
 export default function Page() {
   const { data: session, isPending: sessionPending } = authClient.useSession()
@@ -75,16 +76,16 @@ export default function Page() {
       // Count runs for interstitial cadence.
       const runCount =
         Number(
-          typeof window !== "undefined" ? localStorage.getItem("sr-runs") ?? "0" : "0",
+          typeof window !== "undefined" ? localStorage.getItem(`${RUN_COUNT_PREFIX}:${session?.user?.id ?? "anonymous"}`) ?? "0" : "0",
         ) + 1
-      if (typeof window !== "undefined") localStorage.setItem("sr-runs", String(runCount))
+      if (typeof window !== "undefined") localStorage.setItem(`${RUN_COUNT_PREFIX}:${session?.user?.id ?? "anonymous"}`, String(runCount))
       if (runCount % INTERSTITIAL_EVERY === 0) {
         setShowAd(true)
       } else {
         setScreen("gameover")
       }
     },
-    [state.bestScore, submitRun],
+    [session?.user?.id, state.bestScore, submitRun],
   )
 
   const startGame = () => {
