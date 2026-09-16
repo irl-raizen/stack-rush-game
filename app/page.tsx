@@ -8,6 +8,7 @@ import { claimDailyReward, purchaseSkin, submitGameRun as submitGameRunToCloud }
 import { finishRoom } from "@/app/actions/multiplayer"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
+import { TutorialScreen } from "@/components/stack-game/tutorial-screen"
 import { GameScreen } from "@/components/stack-game/game-screen"
 import { GameOverScreen } from "@/components/stack-game/game-over-screen"
 import { SkinsScreen } from "@/components/stack-game/skins-screen"
@@ -18,7 +19,7 @@ import { ProfileScreen } from "@/components/stack-game/profile-screen"
 import { useGameStorage } from "@/hooks/use-game-storage"
 import { meetsSkillLock, SKINS } from "@/lib/skins"
 
-type Screen = "splash" | "home" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
+type Screen = "splash" | "home" | "tutorial" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
@@ -43,6 +44,7 @@ export default function Page() {
   const {
     state,
     hydrated,
+    update,
     submitRun,
     unlockSkin,
     grantSkin,
@@ -90,8 +92,27 @@ export default function Page() {
 
   const startGame = () => {
     setMultiplayerResult(null)
+    if (!state.tutorialCompleted) {
+      setScreen("tutorial")
+      return
+    }
     setRunKey((k) => k + 1)
     setScreen("game")
+  }
+
+  const startTutorialGame = () => {
+    grantTutorialCompletion()
+    setRunKey((k) => k + 1)
+    setScreen("game")
+  }
+
+  const grantTutorialCompletion = () => {
+    updateStorage({ tutorialCompleted: true })
+  }
+
+  const updateStorage = (patch: Partial<typeof state>) => {
+    // Tutorial completion is persisted through the same account-scoped storage hook.
+    update(patch)
   }
   const handleCloudUnlock = async (skinId: typeof state.selectedSkin, cost: number) => {
     try {
@@ -121,6 +142,15 @@ export default function Page() {
   return (
     <>
       <AnimatePresence mode="wait">
+        {screen === "tutorial" && (
+          <TutorialScreen
+            key="tutorial"
+            skinId={state.selectedSkin}
+            onBack={() => setScreen("home")}
+            onComplete={startTutorialGame}
+          />
+        )}
+
         {screen === "home" && (
           <HomeScreen
             key="home"
