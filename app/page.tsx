@@ -9,6 +9,7 @@ import { finishRoom } from "@/app/actions/multiplayer"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
 import { TutorialScreen } from "@/components/stack-game/tutorial-screen"
+import { AchievementsScreen } from "@/components/stack-game/achievements-screen"
 import { GameScreen } from "@/components/stack-game/game-screen"
 import { GameOverScreen } from "@/components/stack-game/game-over-screen"
 import { SkinsScreen } from "@/components/stack-game/skins-screen"
@@ -18,8 +19,9 @@ import { MultiplayerScreen } from "@/components/stack-game/multiplayer-screen"
 import { ProfileScreen } from "@/components/stack-game/profile-screen"
 import { useGameStorage } from "@/hooks/use-game-storage"
 import { meetsSkillLock, SKINS } from "@/lib/skins"
+import { ACHIEVEMENTS, achievementProgress } from "@/lib/achievements"
 
-type Screen = "splash" | "home" | "tutorial" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
+type Screen = "splash" | "home" | "tutorial" | "achievements" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
@@ -71,7 +73,10 @@ export default function Page() {
   const handleGameOver = useCallback(
     (score: number, coinsEarned: number, bestCombo: number, perfects: number) => {
       const isNewBest = score > state.bestScore
+      const nextStats = { totalRuns: state.totalRuns + 1, totalPerfects: state.totalPerfects + perfects, bestCombo: Math.max(state.bestCombo, bestCombo), bestScore: Math.max(state.bestScore, score) }
+      const newlyCompleted = ACHIEVEMENTS.filter((achievement) => achievementProgress(achievement, nextStats) >= achievement.target && !state.claimedAchievements.includes(achievement.id)).map((achievement) => achievement.id)
       submitRun(score, coinsEarned, bestCombo, perfects)
+      if (newlyCompleted.length) update({ claimedAchievements: [...state.claimedAchievements, ...newlyCompleted], coins: state.coins + coinsEarned + newlyCompleted.reduce((sum, id) => sum + (ACHIEVEMENTS.find((achievement) => achievement.id === id)?.reward ?? 0), 0) })
       void submitGameRunToCloud({ score, combo: bestCombo, perfects, coinsEarned, region: "US" }).catch(() => undefined)
       setLastRun({ score, coinsEarned, bestCombo, perfects, isNewBest })
 
@@ -152,6 +157,8 @@ export default function Page() {
           />
         )}
 
+        {screen === "achievements" && <AchievementsScreen key="achievements" storage={state} onBack={() => setScreen("home")} />}
+
         {screen === "home" && (
           <HomeScreen
             key="home"
@@ -159,6 +166,7 @@ export default function Page() {
             onPlay={startGame}
             onSkins={() => setScreen("skins")}
             onLeaderboard={() => setScreen("leaderboard")}
+            onAchievements={() => setScreen("achievements")}
             onMultiplayer={() => setScreen("multiplayer")}
             onProfile={() => setScreen("profile")}
             onClaimDaily={handleDailyClaim}

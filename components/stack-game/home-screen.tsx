@@ -11,6 +11,7 @@ interface HomeScreenProps {
   onPlay: () => void
   onSkins: () => void
   onLeaderboard: () => void
+  onAchievements: () => void
   onMultiplayer: () => void
   onProfile: () => void
   onClaimDaily: () => number
@@ -22,6 +23,7 @@ export function HomeScreen({
   onPlay,
   onSkins,
   onLeaderboard,
+  onAchievements,
   onMultiplayer,
   onProfile,
   onClaimDaily,
@@ -163,9 +165,10 @@ export function HomeScreen({
           >
             <Trophy size={18} aria-hidden />
             <span>Ranks</span>
-          </motion.button>
-        </div>
-      </main>
+  </motion.button>
+  <motion.button whileTap={{ scale: 0.97 }} onClick={onAchievements} className="col-span-2 flex h-14 items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10"><Trophy size={18} aria-hidden /><span>Achievements</span></motion.button>
+  </div>
+  </main>
 
       <footer className="relative z-10 pb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-white/30">
         v1.0 · Stack Rush
