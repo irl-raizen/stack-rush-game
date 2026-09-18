@@ -9,8 +9,10 @@ import { DailyRewardCard } from "./daily-reward-card"
 interface HomeScreenProps {
   storage: GameStorage
   onPlay: () => void
+  onZen: () => void
   onSkins: () => void
   onLeaderboard: () => void
+  onAchievements: () => void
   onMultiplayer: () => void
   onProfile: () => void
   onClaimDaily: () => number
@@ -20,8 +22,10 @@ interface HomeScreenProps {
 export function HomeScreen({
   storage,
   onPlay,
+  onZen,
   onSkins,
   onLeaderboard,
+  onAchievements,
   onMultiplayer,
   onProfile,
   onClaimDaily,
@@ -139,6 +143,7 @@ export function HomeScreen({
         </motion.button>
 
         <motion.button onClick={onMultiplayer} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-primary/90 font-semibold text-primary-foreground shadow-lg"><Users size={18} aria-hidden /><span>Compete with friends</span></motion.button>
+        <motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10"><span>ZEN MODE</span><span className="text-xs font-normal text-white/60">No game over</span></motion.button>
 
         {/* Secondary actions */}
         <div className="grid w-full max-w-xs grid-cols-2 gap-3">
@@ -163,9 +168,10 @@ export function HomeScreen({
           >
             <Trophy size={18} aria-hidden />
             <span>Ranks</span>
-          </motion.button>
-        </div>
-      </main>
+  </motion.button>
+  <motion.button whileTap={{ scale: 0.97 }} onClick={onAchievements} className="col-span-2 flex h-14 items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10"><Trophy size={18} aria-hidden /><span>Achievements</span></motion.button>
+  </div>
+  </main>
 
       <footer className="relative z-10 pb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-white/30">
         v1.0 · Stack Rush

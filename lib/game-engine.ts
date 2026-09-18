@@ -84,6 +84,7 @@ export interface EngineConfig {
   width: number
   height: number
   skin: SkinId
+  mode?: "classic" | "zen"
   onDrop?: (result: DropResult) => void
   onGameOver?: (finalScore: number, coinsEarned: number, bestCombo: number) => void
 }
@@ -261,7 +262,7 @@ export class StackGameEngine {
     const rightOverlap = Math.min(cur.x + cur.width, top.x + top.width)
     const overlap = rightOverlap - leftOverlap
 
-    if (overlap <= 0) {
+    if (overlap <= 0 && this.cfg.mode !== "zen") {
       this.gameOver = true
       this.trauma = Math.min(1, this.trauma + 0.85)
       this.spawnDebris(cur.x, cur.y, cur.width, cur.height, cur.color, this.direction, true)
@@ -280,12 +281,14 @@ export class StackGameEngine {
       }
     }
 
+    const zenMiss = overlap <= 0 && this.cfg.mode === "zen"
+    const safeOverlap = zenMiss ? Math.max(24, top.width * 0.72) : overlap
     const diff = Math.abs(cur.x - top.x)
-    let placedWidth = overlap
+    let placedWidth = safeOverlap
     let kind: "perfect" | "good" = "good"
     let nearMiss = false
 
-    if (diff <= PERFECT_THRESHOLD) {
+    if (!zenMiss && diff <= PERFECT_THRESHOLD) {
       placedWidth = top.width
       kind = "perfect"
       this.combo++

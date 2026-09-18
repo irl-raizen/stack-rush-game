@@ -9,6 +9,7 @@ import { finishRoom } from "@/app/actions/multiplayer"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
 import { TutorialScreen } from "@/components/stack-game/tutorial-screen"
+import { AchievementsScreen } from "@/components/stack-game/achievements-screen"
 import { GameScreen } from "@/components/stack-game/game-screen"
 import { GameOverScreen } from "@/components/stack-game/game-over-screen"
 import { SkinsScreen } from "@/components/stack-game/skins-screen"
@@ -18,8 +19,9 @@ import { MultiplayerScreen } from "@/components/stack-game/multiplayer-screen"
 import { ProfileScreen } from "@/components/stack-game/profile-screen"
 import { useGameStorage } from "@/hooks/use-game-storage"
 import { meetsSkillLock, SKINS } from "@/lib/skins"
+import { ACHIEVEMENTS, achievementProgress } from "@/lib/achievements"
 
-type Screen = "splash" | "home" | "tutorial" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
+type Screen = "splash" | "home" | "tutorial" | "achievements" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
@@ -29,6 +31,7 @@ export default function Page() {
   const { data: session, isPending: sessionPending } = authClient.useSession()
   const [screen, setScreen] = useState<Screen>("splash")
   const [runKey, setRunKey] = useState(0)
+  const [gameMode, setGameMode] = useState<"classic" | "zen">("classic")
   const [lastRun, setLastRun] = useState<{
     score: number
     coinsEarned: number
@@ -71,7 +74,10 @@ export default function Page() {
   const handleGameOver = useCallback(
     (score: number, coinsEarned: number, bestCombo: number, perfects: number) => {
       const isNewBest = score > state.bestScore
+      const nextStats = { totalRuns: state.totalRuns + 1, totalPerfects: state.totalPerfects + perfects, bestCombo: Math.max(state.bestCombo, bestCombo), bestScore: Math.max(state.bestScore, score) }
+      const newlyCompleted = ACHIEVEMENTS.filter((achievement) => achievementProgress(achievement, nextStats) >= achievement.target && !state.claimedAchievements.includes(achievement.id)).map((achievement) => achievement.id)
       submitRun(score, coinsEarned, bestCombo, perfects)
+      if (newlyCompleted.length) update({ claimedAchievements: [...state.claimedAchievements, ...newlyCompleted], coins: state.coins + coinsEarned + newlyCompleted.reduce((sum, id) => sum + (ACHIEVEMENTS.find((achievement) => achievement.id === id)?.reward ?? 0), 0) })
       void submitGameRunToCloud({ score, combo: bestCombo, perfects, coinsEarned, region: "US" }).catch(() => undefined)
       setLastRun({ score, coinsEarned, bestCombo, perfects, isNewBest })
 
@@ -91,6 +97,7 @@ export default function Page() {
   )
 
   const startGame = () => {
+    setGameMode("classic")
     setMultiplayerResult(null)
     if (!state.tutorialCompleted) {
       setScreen("tutorial")
@@ -101,13 +108,14 @@ export default function Page() {
   }
 
   const startTutorialGame = () => {
-    grantTutorialCompletion()
+    const reward = state.tutorialRewardClaimed ? 0 : 25
+    updateStorage({ tutorialCompleted: true, tutorialRewardClaimed: true, coins: state.coins + reward })
     setRunKey((k) => k + 1)
     setScreen("game")
   }
 
-  const grantTutorialCompletion = () => {
-    updateStorage({ tutorialCompleted: true })
+  const replayTutorial = () => {
+    setScreen("tutorial")
   }
 
   const updateStorage = (patch: Partial<typeof state>) => {
@@ -151,13 +159,17 @@ export default function Page() {
           />
         )}
 
+        {screen === "achievements" && <AchievementsScreen key="achievements" storage={state} onBack={() => setScreen("home")} />}
+
         {screen === "home" && (
           <HomeScreen
             key="home"
             storage={state}
             onPlay={startGame}
+            onZen={() => { setGameMode("zen"); setRunKey((k) => k + 1); setScreen("game") }}
             onSkins={() => setScreen("skins")}
             onLeaderboard={() => setScreen("leaderboard")}
+            onAchievements={() => setScreen("achievements")}
             onMultiplayer={() => setScreen("multiplayer")}
             onProfile={() => setScreen("profile")}
             onClaimDaily={handleDailyClaim}
@@ -169,6 +181,7 @@ export default function Page() {
           <GameScreen
             key={`game-${runKey}`}
             skinId={state.selectedSkin}
+            mode={gameMode}
             hapticsEnabled={state.hapticsEnabled}
             onExit={() => setScreen("home")}
             onGameOver={handleGameOver}
@@ -195,7 +208,7 @@ export default function Page() {
         )}
 
         {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerId={session.user.id} playerName={session.user.name} onBack={() => setScreen("home")} onMatchStart={(room) => { setActiveRoomId(room.id); setMultiplayerNames({ hostName: room.hostName, guestName: room.guestName ?? undefined }); startGame() }} />}
-        {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} />}
+        {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} onReplayTutorial={replayTutorial} />}
       </AnimatePresence>
 
       {/* Game Over overlays the game canvas */}
