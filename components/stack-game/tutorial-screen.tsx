@@ -49,7 +49,7 @@ export function TutorialScreen({ skinId, onComplete, onBack }: { skinId: SkinId;
       </section>
 
       <footer className="relative z-10 mx-auto flex w-full max-w-sm items-center justify-between gap-4 pb-2">
-        <button onClick={isLast ? onComplete : () => setStep(STEPS.length - 1)} className="text-sm font-semibold text-white/50 transition hover:text-white">{isLast ? "" : "Skip tutorial"}</button>
+        <button onClick={isLast ? undefined : onComplete} disabled={isLast} className="text-sm font-semibold text-white/50 transition hover:text-white disabled:pointer-events-none disabled:opacity-0">{isLast ? "" : "Skip tutorial"}</button>
         <button onClick={isLast ? onComplete : () => setStep((value) => value + 1)} className="flex h-14 flex-1 items-center justify-center rounded-2xl bg-teal-300 font-bold text-slate-950 shadow-[0_12px_36px_-10px_rgba(45,212,191,.9)] transition active:scale-[.98]">{isLast ? "Start stacking" : "Continue"}</button>
       </footer>
     </main>
