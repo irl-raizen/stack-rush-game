@@ -31,6 +31,7 @@ export default function Page() {
   const { data: session, isPending: sessionPending } = authClient.useSession()
   const [screen, setScreen] = useState<Screen>("splash")
   const [runKey, setRunKey] = useState(0)
+  const [gameMode, setGameMode] = useState<"classic" | "zen">("classic")
   const [lastRun, setLastRun] = useState<{
     score: number
     coinsEarned: number
@@ -96,6 +97,7 @@ export default function Page() {
   )
 
   const startGame = () => {
+    setGameMode("classic")
     setMultiplayerResult(null)
     if (!state.tutorialCompleted) {
       setScreen("tutorial")
@@ -164,6 +166,7 @@ export default function Page() {
             key="home"
             storage={state}
             onPlay={startGame}
+            onZen={() => { setGameMode("zen"); setRunKey((k) => k + 1); setScreen("game") }}
             onSkins={() => setScreen("skins")}
             onLeaderboard={() => setScreen("leaderboard")}
             onAchievements={() => setScreen("achievements")}
@@ -178,6 +181,7 @@ export default function Page() {
           <GameScreen
             key={`game-${runKey}`}
             skinId={state.selectedSkin}
+            mode={gameMode}
             hapticsEnabled={state.hapticsEnabled}
             onExit={() => setScreen("home")}
             onGameOver={handleGameOver}
