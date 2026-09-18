@@ -101,13 +101,14 @@ export default function Page() {
   }
 
   const startTutorialGame = () => {
-    grantTutorialCompletion()
+    const reward = state.tutorialRewardClaimed ? 0 : 25
+    updateStorage({ tutorialCompleted: true, tutorialRewardClaimed: true, coins: state.coins + reward })
     setRunKey((k) => k + 1)
     setScreen("game")
   }
 
-  const grantTutorialCompletion = () => {
-    updateStorage({ tutorialCompleted: true })
+  const replayTutorial = () => {
+    setScreen("tutorial")
   }
 
   const updateStorage = (patch: Partial<typeof state>) => {
@@ -195,7 +196,7 @@ export default function Page() {
         )}
 
         {screen === "multiplayer" && <MultiplayerScreen key="multiplayer" playerId={session.user.id} playerName={session.user.name} onBack={() => setScreen("home")} onMatchStart={(room) => { setActiveRoomId(room.id); setMultiplayerNames({ hostName: room.hostName, guestName: room.guestName ?? undefined }); startGame() }} />}
-        {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} />}
+        {screen === "profile" && <ProfileScreen key="profile" name={session.user.name} onBack={() => setScreen("home")} onReplayTutorial={replayTutorial} />}
       </AnimatePresence>
 
       {/* Game Over overlays the game canvas */}

@@ -23,6 +23,7 @@ export interface GameStorage {
   /** consecutive-day streak, bumped when claim falls within 24–48h. */
   dailyStreak: number
   tutorialCompleted: boolean
+  tutorialRewardClaimed: boolean
 }
 
 const DEFAULT: GameStorage = {
@@ -39,6 +40,7 @@ const DEFAULT: GameStorage = {
   lastDailyClaim: null,
   dailyStreak: 0,
   tutorialCompleted: false,
+  tutorialRewardClaimed: false,
 }
 
 function storageKey(userId: string | null) { return userId ? `${STORAGE_KEY_PREFIX}:${userId}` : null }
