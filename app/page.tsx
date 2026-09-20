@@ -20,6 +20,7 @@ import { ProfileScreen } from "@/components/stack-game/profile-screen"
 import { useGameStorage } from "@/hooks/use-game-storage"
 import { meetsSkillLock, SKINS } from "@/lib/skins"
 import { ACHIEVEMENTS, achievementProgress } from "@/lib/achievements"
+import { dailyChallengeKey, DAILY_CHALLENGE_REWARD, isDailyChallengeComplete } from "@/lib/daily-challenge"
 
 type Screen = "splash" | "home" | "tutorial" | "achievements" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
 
@@ -77,7 +78,11 @@ export default function Page() {
       const nextStats = { totalRuns: state.totalRuns + 1, totalPerfects: state.totalPerfects + perfects, bestCombo: Math.max(state.bestCombo, bestCombo), bestScore: Math.max(state.bestScore, score) }
       const newlyCompleted = ACHIEVEMENTS.filter((achievement) => achievementProgress(achievement, nextStats) >= achievement.target && !state.claimedAchievements.includes(achievement.id)).map((achievement) => achievement.id)
       submitRun(score, coinsEarned, bestCombo, perfects)
-      if (newlyCompleted.length) update({ claimedAchievements: [...state.claimedAchievements, ...newlyCompleted], coins: state.coins + coinsEarned + newlyCompleted.reduce((sum, id) => sum + (ACHIEVEMENTS.find((achievement) => achievement.id === id)?.reward ?? 0), 0) })
+      const today = dailyChallengeKey()
+      const challengeScore = state.dailyChallengeKey === today ? Math.max(state.dailyChallengeScore, score) : score
+      const challengePatch = { dailyChallengeKey: today, dailyChallengeScore: challengeScore }
+      if (newlyCompleted.length) update({ ...challengePatch, claimedAchievements: [...state.claimedAchievements, ...newlyCompleted], coins: state.coins + coinsEarned + newlyCompleted.reduce((sum, id) => sum + (ACHIEVEMENTS.find((achievement) => achievement.id === id)?.reward ?? 0), 0) })
+      else update(challengePatch)
       void submitGameRunToCloud({ score, combo: bestCombo, perfects, coinsEarned, region: "US" }).catch(() => undefined)
       setLastRun({ score, coinsEarned, bestCombo, perfects, isNewBest })
 
@@ -132,6 +137,20 @@ export default function Page() {
       return false
     }
   }
+  const startDailyChallenge = () => {
+    setGameMode("classic")
+    setMultiplayerResult(null)
+    setRunKey((k) => k + 1)
+    setScreen("game")
+  }
+
+  const claimDailyChallenge = () => {
+    const today = dailyChallengeKey()
+    if (state.dailyChallengeKey === today && isDailyChallengeComplete(state.dailyChallengeScore) && state.dailyChallengeClaimedKey !== today) {
+      update({ dailyChallengeClaimedKey: today, coins: state.coins + DAILY_CHALLENGE_REWARD })
+    }
+  }
+
   const handleDailyClaim = () => {
     void claimDailyReward().then((result) => {
       if (result.claimed) claimDaily()
@@ -174,6 +193,8 @@ export default function Page() {
             onProfile={() => setScreen("profile")}
             onClaimDaily={handleDailyClaim}
             onClaimWelcome={claimWelcome}
+            onDailyChallenge={startDailyChallenge}
+            onClaimDailyChallenge={claimDailyChallenge}
           />
         )}
 
