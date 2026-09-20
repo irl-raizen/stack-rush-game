@@ -5,6 +5,7 @@ import { Play, Palette, Trophy, Coins, Flame, Users } from "lucide-react"
 import { SKINS } from "@/lib/skins"
 import type { GameStorage } from "@/hooks/use-game-storage"
 import { DailyRewardCard } from "./daily-reward-card"
+import { DailyChallengeCard } from "./daily-challenge-card"
 
 interface HomeScreenProps {
   storage: GameStorage
@@ -17,6 +18,8 @@ interface HomeScreenProps {
   onProfile: () => void
   onClaimDaily: () => number
   onClaimWelcome: () => number
+  onDailyChallenge: () => void
+  onClaimDailyChallenge: () => void
 }
 
 export function HomeScreen({
@@ -30,6 +33,8 @@ export function HomeScreen({
   onProfile,
   onClaimDaily,
   onClaimWelcome,
+  onDailyChallenge,
+  onClaimDailyChallenge,
 }: HomeScreenProps) {
   const skin = SKINS[storage.selectedSkin]
 
@@ -126,6 +131,7 @@ export function HomeScreen({
             onClaimDaily={onClaimDaily}
             onClaimWelcome={onClaimWelcome}
           />
+          <DailyChallengeCard storage={storage} onPlay={onDailyChallenge} onClaim={onClaimDailyChallenge} />
         </div>
 
         {/* Play button */}

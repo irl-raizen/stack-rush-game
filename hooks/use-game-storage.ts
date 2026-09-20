@@ -22,9 +22,12 @@ export interface GameStorage {
   tutorialCompleted: boolean
   tutorialRewardClaimed: boolean
   claimedAchievements: string[]
+  dailyChallengeKey: string | null
+  dailyChallengeScore: number
+  dailyChallengeClaimedKey: string | null
 }
 
-const DEFAULT: GameStorage = { bestScore: 0, bestCombo: 0, totalPerfects: 0, totalRuns: 0, coins: 0, unlockedSkins: ["aurora"], selectedSkin: "aurora", soundEnabled: true, hapticsEnabled: true, welcomeClaimed: false, lastDailyClaim: null, dailyStreak: 0, tutorialCompleted: false, tutorialRewardClaimed: false, claimedAchievements: [] }
+const DEFAULT: GameStorage = { bestScore: 0, bestCombo: 0, totalPerfects: 0, totalRuns: 0, coins: 0, unlockedSkins: ["aurora"], selectedSkin: "aurora", soundEnabled: true, hapticsEnabled: true, welcomeClaimed: false, lastDailyClaim: null, dailyStreak: 0, tutorialCompleted: false, tutorialRewardClaimed: false, claimedAchievements: [], dailyChallengeKey: null, dailyChallengeScore: 0, dailyChallengeClaimedKey: null }
 
 function storageKey(userId: string | null) { return userId ? `${STORAGE_KEY_PREFIX}:${userId}` : null }
 function load(userId: string | null): GameStorage {
