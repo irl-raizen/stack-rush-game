@@ -60,10 +60,12 @@ export default function Page() {
 
   useEffect(() => {
     if (!session?.user?.id || !hydrated) return
+    let cancelled = false
     void getPlayerCloudProfile().then((profile) => {
-      if (!profile.stats) return
+      if (cancelled || !profile.stats) return
       hydrateFromCloud({ ...profile.stats, selectedSkinId: profile.stats.selectedSkinId as typeof state.selectedSkin, purchasedSkinIds: profile.purchasedSkinIds as typeof state.unlockedSkins[number][] })
     }).catch(() => undefined)
+    return () => { cancelled = true }
   }, [session?.user?.id, hydrated, hydrateFromCloud])
 
   // Auto-grant any skill-gated skins as soon as the player's stats qualify.
