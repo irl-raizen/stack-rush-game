@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
-import { claimDailyReward, purchaseSkin, submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
+import { claimDailyReward, getPlayerCloudProfile, purchaseSkin, submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
 import { finishRoom } from "@/app/actions/multiplayer"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
@@ -50,12 +50,23 @@ export default function Page() {
     hydrated,
     update,
     submitRun,
+    hydrateFromCloud,
     unlockSkin,
     grantSkin,
     selectSkin,
     claimDaily,
     claimWelcome,
   } = useGameStorage(session?.user?.id ?? null)
+
+  useEffect(() => {
+    if (!session?.user?.id || !hydrated) return
+    let cancelled = false
+    void getPlayerCloudProfile().then((profile) => {
+      if (cancelled || !profile.stats) return
+      hydrateFromCloud({ ...profile.stats, selectedSkinId: profile.stats.selectedSkinId as typeof state.selectedSkin, purchasedSkinIds: profile.purchasedSkinIds as typeof state.unlockedSkins[number][] })
+    }).catch(() => undefined)
+    return () => { cancelled = true }
+  }, [session?.user?.id, hydrated, hydrateFromCloud])
 
   // Auto-grant any skill-gated skins as soon as the player's stats qualify.
   useEffect(() => {
