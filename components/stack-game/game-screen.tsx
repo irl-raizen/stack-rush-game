@@ -9,7 +9,7 @@ import { sfx } from "@/lib/sfx"
 
 interface GameScreenProps {
   skinId: SkinId
-  mode?: "classic" | "zen"
+  mode?: "classic" | "zen" | "timed"
   hapticsEnabled: boolean
   onExit: () => void
   onGameOver: (score: number, coinsEarned: number, bestCombo: number, perfects: number) => void
@@ -39,6 +39,7 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
   const [score, setScore] = useState(0)
   const [combo, setCombo] = useState(0)
   const [coins, setCoins] = useState(0)
+  const [timeRemaining, setTimeRemaining] = useState(60)
   const [multiplier, setMultiplier] = useState<1 | 2 | 3 | 5>(1)
   const [perfectFloat, setPerfectFloat] = useState<{ id: number; tier: 1 | 2 | 3 | 5 } | null>(
     null,
@@ -121,9 +122,10 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
         engineRef.current = new StackGameEngine({
           width: w,
           height: h,
-  skin: skinId,
-  mode,
-  onDrop: handleDrop,
+          skin: skinId,
+          mode,
+          onTimer: setTimeRemaining,
+          onDrop: handleDrop,
           onGameOver: handleGameOver,
         })
       } else {
@@ -255,6 +257,8 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
             )}
           </AnimatePresence>
         </div>
+
+        {mode === "timed" && <div className={`pointer-events-none absolute left-1/2 top-20 -translate-x-1/2 rounded-full px-4 py-1 text-sm font-bold tabular-nums ${timeRemaining <= 10 ? "bg-rose-400 text-rose-950" : "bg-cyan-400 text-cyan-950"}`}>TIME {timeRemaining}s</div>}
 
         <div className="pointer-events-auto flex h-10 items-center gap-1.5 rounded-full bg-white/10 px-3 backdrop-blur-sm ring-1 ring-inset ring-white/10">
           <Coins size={14} className="text-amber-300" aria-hidden />

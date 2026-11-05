@@ -11,6 +11,7 @@ interface HomeScreenProps {
   storage: GameStorage
   onPlay: () => void
   onZen: () => void
+  onTimed: () => void
   onSkins: () => void
   onLeaderboard: () => void
   onAchievements: () => void
@@ -26,6 +27,7 @@ export function HomeScreen({
   storage,
   onPlay,
   onZen,
+  onTimed,
   onSkins,
   onLeaderboard,
   onAchievements,
@@ -149,7 +151,7 @@ export function HomeScreen({
         </motion.button>
 
         <motion.button onClick={onMultiplayer} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-primary/90 font-semibold text-primary-foreground shadow-lg"><Users size={18} aria-hidden /><span>Compete with friends</span></motion.button>
-        <motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10"><span>ZEN MODE</span><span className="text-xs font-normal text-white/60">No game over</span></motion.button>
+        <div className="flex w-full max-w-xs gap-3"><motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10"><span>ZEN</span></motion.button><motion.button onClick={onTimed} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-400/15 font-semibold text-cyan-100 ring-1 ring-inset ring-cyan-300/30"><span>TIMED</span><span className="text-xs font-normal text-cyan-200/70">60 sec</span></motion.button></div>
 
         {/* Secondary actions */}
         <div className="grid w-full max-w-xs grid-cols-2 gap-3">

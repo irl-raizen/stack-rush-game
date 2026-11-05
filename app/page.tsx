@@ -32,7 +32,7 @@ export default function Page() {
   const { data: session, isPending: sessionPending } = authClient.useSession()
   const [screen, setScreen] = useState<Screen>("splash")
   const [runKey, setRunKey] = useState(0)
-  const [gameMode, setGameMode] = useState<"classic" | "zen">("classic")
+  const [gameMode, setGameMode] = useState<"classic" | "zen" | "timed">("classic")
   const [lastRun, setLastRun] = useState<{
     score: number
     coinsEarned: number
@@ -197,6 +197,7 @@ export default function Page() {
             storage={state}
             onPlay={startGame}
             onZen={() => { setGameMode("zen"); setRunKey((k) => k + 1); setScreen("game") }}
+            onTimed={() => { setGameMode("timed"); setRunKey((k) => k + 1); setScreen("game") }}
             onSkins={() => setScreen("skins")}
             onLeaderboard={() => setScreen("leaderboard")}
             onAchievements={() => setScreen("achievements")}
