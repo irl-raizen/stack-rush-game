@@ -6,6 +6,7 @@ import { SKINS } from "@/lib/skins"
 import type { GameStorage } from "@/hooks/use-game-storage"
 import { DailyRewardCard } from "./daily-reward-card"
 import { DailyChallengeCard } from "./daily-challenge-card"
+import { DailyMissionCard } from "./daily-mission-card"
 
 interface HomeScreenProps {
   storage: GameStorage
@@ -21,6 +22,7 @@ interface HomeScreenProps {
   onClaimWelcome: () => number
   onDailyChallenge: () => void
   onClaimDailyChallenge: () => void
+  onClaimDailyMission: () => void
 }
 
 export function HomeScreen({
@@ -37,6 +39,7 @@ export function HomeScreen({
   onClaimWelcome,
   onDailyChallenge,
   onClaimDailyChallenge,
+  onClaimDailyMission,
 }: HomeScreenProps) {
   const skin = SKINS[storage.selectedSkin]
 
@@ -134,6 +137,7 @@ export function HomeScreen({
             onClaimWelcome={onClaimWelcome}
           />
           <DailyChallengeCard storage={storage} onPlay={onDailyChallenge} onClaim={onClaimDailyChallenge} />
+          <DailyMissionCard storage={storage} onClaim={onClaimDailyMission} />
         </div>
 
         {/* Play button */}
