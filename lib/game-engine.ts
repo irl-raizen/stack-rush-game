@@ -84,7 +84,8 @@ export interface EngineConfig {
   width: number
   height: number
   skin: SkinId
-  mode?: "classic" | "zen"
+  mode?: "classic" | "zen" | "timed"
+  onTimer?: (seconds: number) => void
   onDrop?: (result: DropResult) => void
   onGameOver?: (finalScore: number, coinsEarned: number, bestCombo: number) => void
 }
@@ -119,6 +120,8 @@ export class StackGameEngine {
   cameraY = 0
   targetCameraY = 0
   gameOver = false
+  timeRemaining = 60
+  private lastTimerSecond = 60
 
   // Difficulty / movement state.
   /** After 20+ stacks we add a sinusoidal micro-jitter on top of the base drift. */
@@ -173,6 +176,20 @@ export class StackGameEngine {
     if (this.gameOver) {
       this.updateEffects(dt)
       return
+    }
+
+    if (this.cfg.mode === "timed") {
+      this.timeRemaining = Math.max(0, this.timeRemaining - dt / 1000)
+      const wholeSeconds = Math.ceil(this.timeRemaining)
+      if (wholeSeconds !== this.lastTimerSecond) {
+        this.lastTimerSecond = wholeSeconds
+        this.cfg.onTimer?.(wholeSeconds)
+      }
+      if (this.timeRemaining <= 0) {
+        this.gameOver = true
+        this.cfg.onGameOver?.(this.score, this.coinsEarned, this.bestCombo)
+        return
+      }
     }
 
     const frames = dt / 16.6667

@@ -25,9 +25,12 @@ export interface GameStorage {
   dailyChallengeKey: string | null
   dailyChallengeScore: number
   dailyChallengeClaimedKey: string | null
+  dailyMissionKey: string | null
+  dailyMissionProgress: number
+  dailyMissionClaimedKey: string | null
 }
 
-const DEFAULT: GameStorage = { bestScore: 0, bestCombo: 0, totalPerfects: 0, totalRuns: 0, coins: 0, unlockedSkins: ["aurora"], selectedSkin: "aurora", soundEnabled: true, hapticsEnabled: true, welcomeClaimed: false, lastDailyClaim: null, dailyStreak: 0, tutorialCompleted: false, tutorialRewardClaimed: false, claimedAchievements: [], dailyChallengeKey: null, dailyChallengeScore: 0, dailyChallengeClaimedKey: null }
+const DEFAULT: GameStorage = { bestScore: 0, bestCombo: 0, totalPerfects: 0, totalRuns: 0, coins: 0, unlockedSkins: ["aurora"], selectedSkin: "aurora", soundEnabled: true, hapticsEnabled: true, welcomeClaimed: false, lastDailyClaim: null, dailyStreak: 0, tutorialCompleted: false, tutorialRewardClaimed: false, claimedAchievements: [], dailyChallengeKey: null, dailyChallengeScore: 0, dailyChallengeClaimedKey: null, dailyMissionKey: null, dailyMissionProgress: 0, dailyMissionClaimedKey: null }
 
 function storageKey(userId: string | null) { return userId ? `${STORAGE_KEY_PREFIX}:${userId}` : null }
 function load(userId: string | null): GameStorage {
