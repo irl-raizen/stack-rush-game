@@ -19,7 +19,7 @@ export function TutorialScreen({ skinId, onComplete, onBack }: { skinId: SkinId;
   const isLast = step === STEPS.length - 1
 
   return (
-    <main className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[#fff4dc] px-6 py-6 text-[#071957]" style={{ background: skin.background }}>
+    <main className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[#0b1024] px-6 py-6 text-slate-100" style={{ background: skin.background }}>
       <div className="pointer-events-none absolute inset-0 opacity-30" style={{ background: "radial-gradient(circle at 50% 8%, rgba(45,212,191,.32), transparent 34%)" }} />
       <header className="relative z-10 flex items-center justify-between">
         <button onClick={onBack} aria-label="Back" className="flex h-10 items-center gap-2 rounded-full bg-white/10 px-3 text-sm font-medium ring-1 ring-inset ring-white/10"><ArrowLeft size={16} aria-hidden /> Back</button>

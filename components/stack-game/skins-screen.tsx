@@ -42,7 +42,7 @@ export function SkinsScreen({ storage, onBack, onSelect, onUnlock }: SkinsScreen
       key={storage.selectedSkin}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative h-[100dvh] overflow-y-auto bg-[#fff4dc] text-[#071957] transition-[background] duration-500"
+      className="relative h-[100dvh] overflow-y-auto bg-[#0b1024] text-slate-100 transition-[background] duration-500"
       style={{ background: activeSkin.background }}
     >
       <header

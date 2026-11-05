@@ -29,13 +29,13 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 1rem;
-  --arcade-cream: #fff4dc;
-  --arcade-navy: #071957;
-  --arcade-blue: #0878f9;
-  --arcade-coral: #ff5548;
-  --arcade-lavender: #d9d6ff;
-  --arcade-cyan: #d8f5ff;
-  --arcade-yellow: #ffc928;
+  --arcade-cream: #0b1024;
+  --arcade-navy: #050816;
+  --arcade-blue: #7657ff;
+  --arcade-coral: #ff4f8b;
+  --arcade-lavender: #20254a;
+  --arcade-cyan: #23d9ff;
+  --arcade-yellow: #c9ff4a;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -129,7 +129,7 @@
   html,
   body {
     @apply bg-background text-foreground;
-    background: var(--arcade-navy);
+    background: radial-gradient(circle at 50% -10%, #1b164d 0%, var(--arcade-navy) 46%, #03040b 100%);
     /* Lock the root to the visible viewport so no page-level scrollbar ever appears.
        Individual overlays scroll internally when their content is taller than the viewport. */
     height: 100%;
