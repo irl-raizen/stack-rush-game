@@ -28,7 +28,14 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
+  --radius: 1rem;
+  --arcade-cream: #0b1024;
+  --arcade-navy: #050816;
+  --arcade-blue: #7657ff;
+  --arcade-coral: #ff4f8b;
+  --arcade-lavender: #20254a;
+  --arcade-cyan: #23d9ff;
+  --arcade-yellow: #c9ff4a;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -122,6 +129,7 @@
   html,
   body {
     @apply bg-background text-foreground;
+    background: radial-gradient(circle at 50% -10%, #1b164d 0%, var(--arcade-navy) 46%, #03040b 100%);
     /* Lock the root to the visible viewport so no page-level scrollbar ever appears.
        Individual overlays scroll internally when their content is taller than the viewport. */
     height: 100%;
@@ -129,6 +137,18 @@
     overflow: hidden;
     overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (max-height: 520px) {
+    .landing-shell { min-height: calc(100vh - 1rem) !important; }
+    .landing-hero-section { justify-content: flex-start; padding-top: 0.75rem; }
+    .landing-tower { height: 4.75rem; margin-bottom: 0.5rem; transform: scale(0.62); transform-origin: top center; }
+    .landing-hero-section h1 { font-size: 2.25rem; line-height: 1; }
+    .landing-hero-section > p { margin-top: 0.35rem; }
+    .landing-actions { flex-direction: row; margin-top: 0.8rem; }
+    .landing-actions a { height: 2.75rem; }
+    .landing-features { display: none; }
+    .landing-shell footer { margin-top: 0.5rem; }
   }
   body {
     /* Respect iOS safe areas without ever producing a document scrollbar. */

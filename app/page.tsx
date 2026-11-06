@@ -180,32 +180,32 @@ export default function Page() {
   if (sessionPending) return <div className="flex min-h-screen items-center justify-center bg-background text-muted-foreground">Loading your player profile…</div>
   if (!session?.user) {
     return (
-      <main className="min-h-screen bg-[#071957] px-2 py-2 text-[#071957]">
-        <div className="relative mx-auto flex min-h-[calc(100vh-1rem)] w-full max-w-md flex-col overflow-hidden rounded-[2rem] bg-[#fff4dc] px-5 py-5 shadow-2xl">
+      <main className="min-h-screen bg-[#050816] px-2 py-2 text-slate-100">
+        <div className="relative mx-auto flex landing-shell min-h-[calc(100vh-1rem)] w-full max-w-md flex-col overflow-hidden rounded-[2rem] bg-[#0b1024] px-5 py-5 shadow-2xl">
           <div className="pointer-events-none absolute -left-10 top-20 h-28 w-28 rounded-full bg-[#ffcf72]/45" />
           <div className="pointer-events-none absolute -right-12 top-36 h-32 w-32 rounded-full bg-[#ffcf72]/35" />
           <header className="relative z-10 flex items-center justify-between">
             <span className="rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-bold">STACK RUSH</span>
             <span className="rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-semibold">Perfect tower arcade</span>
           </header>
-          <section className="relative z-10 flex flex-1 flex-col items-center justify-center text-center">
-            <div className="mb-7 flex h-32 w-44 flex-col items-center justify-end gap-1.5" role="img" aria-label="Stacked blue tower illustration">
+          <section className="landing-hero-section relative z-10 flex flex-1 flex-col items-center justify-center text-center">
+            <div className="landing-tower mb-7 flex h-32 w-44 flex-col items-center justify-end gap-1.5" role="img" aria-label="Stacked blue tower illustration">
               {["w-16", "w-24", "w-32", "w-40", "w-28"].map((width, index) => <div key={width} className={`${width} h-4 rounded-md bg-gradient-to-b from-[#31b5ff] to-[#0878f9] shadow-[0_5px_0_#0758c9]`} style={{ transform: `translateX(${index % 2 === 0 ? "-5px" : "5px"})` }} />)}
             </div>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-[#0878f9]">Build higher</p>
             <h1 className="text-5xl font-black tracking-[-0.06em]">Stack Rush</h1>
-            <p className="mt-3 max-w-xs text-sm font-medium leading-5 text-[#071957]/75">Tap to drop. Perfect the stack. Reach the sky.</p>
-            <div className="mt-9 flex w-full max-w-xs flex-col gap-3">
+            <p className="mt-3 max-w-xs text-sm font-medium leading-5 text-slate-100/75">Tap to drop. Perfect the stack. Reach the sky.</p>
+            <div className="landing-actions mt-9 flex w-full max-w-xs flex-col gap-3">
               <Link href="/sign-up" className="flex h-14 items-center justify-center rounded-2xl bg-gradient-to-r from-[#0878f9] to-[#1769ee] text-base font-black text-white shadow-[0_8px_0_#0758c9] transition-transform hover:-translate-y-0.5">PLAY NOW</Link>
               <Link href="/sign-in" className="flex h-12 items-center justify-center rounded-2xl bg-[#ff5548] font-bold text-white shadow-[0_6px_0_#d93631] transition-transform hover:-translate-y-0.5">SIGN IN</Link>
             </div>
-            <div className="mt-5 grid w-full max-w-xs grid-cols-3 gap-2 text-[11px] font-bold">
-              <div className="rounded-xl bg-[#d9d6ff] px-2 py-3">Daily challenges</div>
-              <div className="rounded-xl bg-[#d8efff] px-2 py-3">Timed mode</div>
-              <div className="rounded-xl bg-[#ffe0db] px-2 py-3">Multiplayer</div>
+            <div className="landing-features mt-5 grid w-full max-w-xs grid-cols-3 gap-2 text-[11px] font-bold">
+              <div className="rounded-xl bg-[#20254a] px-2 py-3 text-[#c9ff4a]">Daily challenges</div>
+              <div className="rounded-xl bg-[#142a48] px-2 py-3 text-[#23d9ff]">Timed mode</div>
+              <div className="rounded-xl bg-[#3b1736] px-2 py-3 text-[#ff4f8b]">Multiplayer</div>
             </div>
           </section>
-          <footer className="relative z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-[#071957]/45">v1.0 · stack rush</footer>
+          <footer className="relative z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-slate-100/45">v1.0 · stack rush</footer>
         </div>
       </main>
     )
