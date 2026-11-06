@@ -130,8 +130,6 @@
   body {
     @apply bg-background text-foreground;
     background: radial-gradient(circle at 50% -10%, #1b164d 0%, var(--arcade-navy) 46%, #03040b 100%);
-  }
-
     /* Lock the root to the visible viewport so no page-level scrollbar ever appears.
        Individual overlays scroll internally when their content is taller than the viewport. */
     height: 100%;
