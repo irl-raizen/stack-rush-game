@@ -19,7 +19,7 @@ export function TutorialScreen({ skinId, onComplete, onBack }: { skinId: SkinId;
   const isLast = step === STEPS.length - 1
 
   return (
-    <main className="relative flex min-h-[100dvh] flex-col overflow-hidden px-6 py-6 text-white" style={{ background: skin.background }}>
+    <main className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[#0b1024] px-6 py-6 text-slate-100" style={{ background: skin.background }}>
       <div className="pointer-events-none absolute inset-0 opacity-30" style={{ background: "radial-gradient(circle at 50% 8%, rgba(45,212,191,.32), transparent 34%)" }} />
       <header className="relative z-10 flex items-center justify-between">
         <button onClick={onBack} aria-label="Back" className="flex h-10 items-center gap-2 rounded-full bg-white/10 px-3 text-sm font-medium ring-1 ring-inset ring-white/10"><ArrowLeft size={16} aria-hidden /> Back</button>
@@ -50,7 +50,7 @@ export function TutorialScreen({ skinId, onComplete, onBack }: { skinId: SkinId;
 
       <footer className="relative z-10 mx-auto flex w-full max-w-sm items-center justify-between gap-4 pb-2">
         <button onClick={isLast ? undefined : onComplete} disabled={isLast} className="text-sm font-semibold text-white/50 transition hover:text-white disabled:pointer-events-none disabled:opacity-0">{isLast ? "" : "Skip tutorial"}</button>
-        <button onClick={isLast ? onComplete : () => setStep((value) => value + 1)} className="flex h-14 flex-1 items-center justify-center rounded-2xl bg-teal-300 font-bold text-slate-950 shadow-[0_12px_36px_-10px_rgba(45,212,191,.9)] transition active:scale-[.98]">{isLast ? "Start stacking" : "Continue"}</button>
+        <button onClick={isLast ? onComplete : () => setStep((value) => value + 1)} className="flex h-14 flex-1 items-center justify-center rounded-2xl bg-[#0878f9] font-bold text-white shadow-[0_6px_0_#0758c9] shadow-[0_12px_36px_-10px_rgba(45,212,191,.9)] transition active:scale-[.98]">{isLast ? "Start stacking" : "Continue"}</button>
       </footer>
     </main>
   )

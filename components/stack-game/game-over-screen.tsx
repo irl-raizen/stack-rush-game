@@ -142,7 +142,7 @@ export function GameOverScreen({
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={onRetry}
-              className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-400 font-bold text-slate-950 shadow-[0_10px_30px_-8px_rgba(20,184,166,0.6)]"
+              className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0878f9] to-[#1769ee] font-bold text-white shadow-[0_6px_0_#0758c9] shadow-[0_10px_30px_-8px_rgba(20,184,166,0.6)]"
             >
               <RotateCcw size={18} aria-hidden />
               <span>Retry</span>
@@ -152,7 +152,7 @@ export function GameOverScreen({
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={onHome}
-                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/15"
+                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-[#d9d6ff] font-bold text-[#071957] ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/15"
               >
                 <Home size={16} aria-hidden />
                 <span>Home</span>
@@ -160,7 +160,7 @@ export function GameOverScreen({
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={handleShare}
-                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white/10 font-semibold text-white ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/15"
+                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-[#d9d6ff] font-bold text-[#071957] ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/15"
               >
                 <Share2 size={16} aria-hidden />
                 <span>Share</span>

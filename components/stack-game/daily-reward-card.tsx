@@ -116,7 +116,7 @@ export function DailyRewardCard({
       }}
       className={`relative flex w-full items-center justify-between gap-3 overflow-hidden rounded-2xl px-4 py-3 text-left transition-all ring-1 ring-inset ${
         available
-          ? "bg-gradient-to-r from-[#bde7ff] to-[#d7f1ff] ring-[#0878f9]/20 shadow-[0_10px_30px_-10px_rgba(20,184,166,0.6)] hover:from-teal-500/40 hover:to-cyan-500/40"
+          ? "bg-gradient-to-r from-[#15264b] to-[#122b42] ring-[#0878f9]/20 shadow-[0_10px_30px_-10px_rgba(20,184,166,0.6)] hover:from-teal-500/40 hover:to-cyan-500/40"
           : "bg-white/5 ring-white/10 opacity-80"
       }`}
     >
@@ -129,17 +129,17 @@ export function DailyRewardCard({
           <Gift size={20} className={available ? "text-teal-200" : "text-white/40"} aria-hidden />
         </div>
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#071957]/60">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-100/60">
             Daily Reward
           </p>
-          <p className="text-sm font-semibold text-[#071957]">
+          <p className="text-sm font-semibold text-slate-100">
             {available ? "Claim today's bonus" : `Back in ${formatCooldown(cooldown)}`}
           </p>
         </div>
       </div>
       <div
         className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold tabular-nums ${
-          available ? "bg-amber-400 text-slate-950" : "bg-white/10 text-[#071957]/60"
+          available ? "bg-amber-400 text-slate-950" : "bg-white/10 text-slate-100/60"
         }`}
       >
         <Coins size={14} aria-hidden />+{nextReward}

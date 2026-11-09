@@ -205,7 +205,7 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
-      className="relative flex h-[100dvh] w-full flex-col text-white"
+      className="relative flex h-[100dvh] w-full flex-col text-[#071957]"
       style={{ background: skin.background }}
     >
       {/* HUD */}
@@ -342,7 +342,7 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
               exit={{ opacity: 0, y: -56 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
               onAnimationComplete={() => setScoreGainPopup(null)}
-              className="pointer-events-none absolute left-1/2 top-[48%] -translate-x-1/2 text-lg font-bold tabular-nums text-white/90 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
+              className="pointer-events-none absolute left-1/2 top-[48%] -translate-x-1/2 text-lg font-bold tabular-nums text-[#071957]/90 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
             >
               +{scoreGainPopup.value}
             </motion.div>
@@ -362,7 +362,7 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-              className="rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white/80 backdrop-blur-sm"
+              className="rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#071957]/80 backdrop-blur-sm"
             >
               Tap anywhere to drop
             </motion.div>

@@ -45,7 +45,7 @@ export function HomeScreen({
 
   return (
     <div
-      className="relative mx-auto flex h-[100dvh] w-full max-w-md flex-col overflow-y-auto overflow-x-hidden bg-[#fff4dc] text-[#071957] shadow-2xl"
+      className="relative mx-auto flex h-[100dvh] w-full max-w-md flex-col overflow-y-auto overflow-x-hidden bg-[#0b1024] text-slate-100 shadow-2xl"
       style={{ borderLeft: "5px solid #071957", borderRight: "5px solid #071957" }}
     >
       {/* Decorative floating blocks */}
@@ -76,19 +76,19 @@ export function HomeScreen({
       </div>
 
       {/* Top bar: coins + best + best combo */}
-      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-6"><button onClick={onProfile} className="rounded-full bg-white/70 px-3 py-1.5 text-xs font-bold text-[#071957] shadow-sm ring-1 ring-inset ring-[#071957]/10">Profile</button>
-        <div className="flex items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-[#071957] shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
+      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-6"><button onClick={onProfile} className="rounded-full bg-white/[0.07] px-3 py-1.5 text-xs font-bold text-slate-100 shadow-sm ring-1 ring-inset ring-[#071957]/10">Profile</button>
+        <div className="flex items-center gap-2 rounded-full bg-white/[0.07] px-3 py-1.5 text-slate-100 shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
           <Coins size={16} className="text-amber-300" aria-hidden />
           <span className="text-sm font-semibold tabular-nums">{storage.coins}</span>
         </div>
         <div className="flex items-center gap-2">
           {storage.bestCombo > 0 && (
-            <div className="flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-[#071957] shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
+            <div className="flex items-center gap-1.5 rounded-full bg-white/[0.07] px-3 py-1.5 text-slate-100 shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
               <Flame size={14} className="text-orange-300" aria-hidden />
               <span className="text-xs font-semibold tabular-nums">x{storage.bestCombo}</span>
             </div>
           )}
-          <div className="flex items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-[#071957] shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
+          <div className="flex items-center gap-2 rounded-full bg-white/[0.07] px-3 py-1.5 text-slate-100 shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
             <Trophy size={16} className="text-amber-300" aria-hidden />
             <span className="text-sm font-semibold tabular-nums">{storage.bestScore}</span>
           </div>
@@ -123,8 +123,8 @@ export function HomeScreen({
             ))}
           </div>
 
-          <h1 className="text-center text-4xl font-black tracking-tight text-balance text-[#071957]">Stack Rush</h1>
-          <p className="mt-2 text-center text-sm font-medium text-[#071957]/70">
+          <h1 className="text-center text-4xl font-black tracking-tight text-balance text-slate-100">Stack Rush</h1>
+          <p className="mt-2 text-center text-sm font-medium text-slate-100/70">
             Tap to drop. Perfect the stack. Reach the sky.
           </p>
         </motion.div>
@@ -147,7 +147,7 @@ export function HomeScreen({
           transition={{ delay: 0.2, duration: 0.4 }}
           whileTap={{ scale: 0.96 }}
           onClick={onPlay}
-          className="group relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#0878f9] to-[#1769ee] font-bold text-white shadow-[0_10px_30px_-8px_rgba(23,105,238,0.55)] transition-shadow hover:shadow-[0_10px_50px_-8px_rgba(20,184,166,0.9)]"
+          className="group relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#7657ff] to-[#5b35e8] font-bold text-white shadow-[0_10px_30px_-8px_rgba(23,105,238,0.55)] transition-shadow hover:shadow-[0_10px_50px_-8px_rgba(20,184,166,0.9)]"
         >
           <Play size={22} fill="currentColor" aria-hidden />
           <span className="text-lg tracking-wide">PLAY</span>
@@ -155,7 +155,7 @@ export function HomeScreen({
         </motion.button>
 
         <motion.button onClick={onMultiplayer} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff5b4d] to-[#ff4035] font-bold text-white shadow-lg"><Users size={18} aria-hidden /><span>Compete with friends</span></motion.button>
-        <div className="flex w-full max-w-xs gap-3"><motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#d9d6ff] font-bold text-[#071957] ring-1 ring-inset ring-[#071957]/10"><span>ZEN</span></motion.button><motion.button onClick={onTimed} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#c9c5ff] font-bold text-[#071957] ring-1 ring-inset ring-[#071957]/10"><span>TIMED</span><span className="text-xs font-normal text-cyan-200/70">60 sec</span></motion.button></div>
+        <div className="flex w-full max-w-xs gap-3"><motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><span>ZEN</span></motion.button><motion.button onClick={onTimed} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><span>TIMED</span><span className="text-xs font-normal text-cyan-200/70">60 sec</span></motion.button></div>
 
         {/* Secondary actions */}
         <div className="grid w-full max-w-xs grid-cols-2 gap-3">
@@ -181,11 +181,11 @@ export function HomeScreen({
             <Trophy size={18} aria-hidden />
             <span>Ranks</span>
   </motion.button>
-  <motion.button whileTap={{ scale: 0.97 }} onClick={onAchievements} className="col-span-2 flex h-14 items-center justify-center gap-2 rounded-xl bg-[#d9d6ff] font-bold text-[#071957] ring-1 ring-inset ring-[#071957]/10"><Trophy size={18} aria-hidden /><span>Achievements</span></motion.button>
+  <motion.button whileTap={{ scale: 0.97 }} onClick={onAchievements} className="col-span-2 flex h-14 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><Trophy size={18} aria-hidden /><span>Achievements</span></motion.button>
   </div>
   </main>
 
-      <footer className="relative z-10 pb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-[#071957]/45">
+      <footer className="relative z-10 pb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-slate-100/45">
         v1.0 · Stack Rush
       </footer>
     </div>
