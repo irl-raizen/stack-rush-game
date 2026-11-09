@@ -27,7 +27,6 @@ type Screen = "splash" | "home" | "tutorial" | "achievements" | "game" | "gameov
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
-const RUN_COUNT_PREFIX = "sr-runs"
 
 export default function Page() {
   const { data: session, isPending: sessionPending } = authClient.useSession()
@@ -100,19 +99,16 @@ export default function Page() {
       void submitGameRunToCloud({ score, combo: bestCombo, perfects, coinsEarned, region: "US" }).catch(() => undefined)
       setLastRun({ score, coinsEarned, bestCombo, perfects, isNewBest })
 
-      // Count runs for interstitial cadence.
-      const runCount =
-        Number(
-          typeof window !== "undefined" ? localStorage.getItem(`${RUN_COUNT_PREFIX}:${session?.user?.id ?? "anonymous"}`) ?? "0" : "0",
-        ) + 1
-      if (typeof window !== "undefined") localStorage.setItem(`${RUN_COUNT_PREFIX}:${session?.user?.id ?? "anonymous"}`, String(runCount))
+      // Keep ad cadence inside the account-scoped game profile so switching users cannot carry over run counts.
+      const runCount = state.interstitialRunCount + 1
+      update({ interstitialRunCount: runCount })
       if (runCount % INTERSTITIAL_EVERY === 0) {
         setShowAd(true)
       } else {
         setScreen("gameover")
       }
     },
-    [session?.user?.id, state.bestScore, submitRun],
+    [session?.user?.id, state, submitRun, update],
   )
 
   const startGame = () => {
