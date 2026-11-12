@@ -45,29 +45,36 @@ export function dailyCooldownMs(last: number | null) { return last ? Math.max(0,
 
 export function useGameStorage(userId: string | null) {
   const [state, setState] = useState<GameStorage>(DEFAULT)
-  const [hydrated, setHydrated] = useState(false)
+  const [hydratedUserId, setHydratedUserId] = useState<string | null | undefined>(undefined)
   const userIdRef = useRef(userId)
+  const hydratedUserIdRef = useRef<string | null | undefined>(undefined)
 
   useEffect(() => {
     userIdRef.current = userId
-    setHydrated(false)
     setState(load(userId))
-    setHydrated(true)
+    hydratedUserIdRef.current = userId
+    setHydratedUserId(userId)
   }, [userId])
+
+  const hydrated = hydratedUserId === userId
+  const visibleState = hydrated ? state : DEFAULT
+  const persist = (next: GameStorage) => {
+    if (hydratedUserIdRef.current === userIdRef.current) save(userIdRef.current, next)
+  }
 
   const update = useCallback((patch: Partial<GameStorage> | ((s: GameStorage) => GameStorage)) => {
     setState((prev) => {
       const next = typeof patch === "function" ? patch(prev) : { ...prev, ...patch }
-      save(userIdRef.current, next)
+      persist(next)
       return next
     })
   }, [])
-  const submitRun = useCallback((score: number, coinsEarned: number, bestCombo: number, perfectsThisRun: number) => { setState((prev) => { const next = { ...prev, bestScore: Math.max(prev.bestScore, score), bestCombo: Math.max(prev.bestCombo, bestCombo), totalPerfects: prev.totalPerfects + perfectsThisRun, totalRuns: prev.totalRuns + 1, coins: prev.coins + coinsEarned }; save(userIdRef.current, next); return next }) }, [userId])
-  const unlockSkin = useCallback((skinId: SkinId, cost: number) => { let success = false; setState((prev) => { if (prev.unlockedSkins.includes(skinId) || prev.coins < cost) return prev; success = true; const next = { ...prev, coins: prev.coins - cost, unlockedSkins: [...prev.unlockedSkins, skinId], selectedSkin: skinId }; save(userIdRef.current, next); return next }); return success }, [userId])
-  const grantSkin = useCallback((skinId: SkinId) => { setState((prev) => { if (prev.unlockedSkins.includes(skinId)) return prev; const next = { ...prev, unlockedSkins: [...prev.unlockedSkins, skinId] }; save(userIdRef.current, next); return next }) }, [userId])
-  const selectSkin = useCallback((skinId: SkinId) => { setState((prev) => { if (!prev.unlockedSkins.includes(skinId)) return prev; const next = { ...prev, selectedSkin: skinId }; save(userIdRef.current, next); return next }) }, [userId])
-  const claimDaily = useCallback(() => { let granted = 0; setState((prev) => { const now = Date.now(); if (prev.lastDailyClaim && now - prev.lastDailyClaim < DAY_MS) return prev; const streak = prev.lastDailyClaim && now - prev.lastDailyClaim < DAY_MS * 2 ? Math.min(7, prev.dailyStreak + 1) : 1; granted = dailyRewardFor(streak); const next = { ...prev, coins: prev.coins + granted, lastDailyClaim: now, dailyStreak: streak }; save(userIdRef.current, next); return next }); return granted }, [userId])
-  const hydrateFromCloud = useCallback((cloud: { bestScore: number; bestCombo: number; totalPerfects: number; totalRuns: number; coinsBalance: number; selectedSkinId: SkinId; purchasedSkinIds: SkinId[] }) => { setState((prev) => { const next = { ...prev, bestScore: Math.max(prev.bestScore, cloud.bestScore), bestCombo: Math.max(prev.bestCombo, cloud.bestCombo), totalPerfects: Math.max(prev.totalPerfects, cloud.totalPerfects), totalRuns: Math.max(prev.totalRuns, cloud.totalRuns), coins: Math.max(prev.coins, cloud.coinsBalance), selectedSkin: cloud.selectedSkinId, unlockedSkins: Array.from(new Set([...prev.unlockedSkins, ...cloud.purchasedSkinIds, cloud.selectedSkinId])) }; save(userIdRef.current, next); return next }) }, [userId])
-  const claimWelcome = useCallback(() => { let granted = 0; setState((prev) => { if (prev.welcomeClaimed) return prev; granted = WELCOME_REWARD; const next = { ...prev, coins: prev.coins + WELCOME_REWARD, welcomeClaimed: true }; save(userIdRef.current, next); return next }); return granted }, [userId])
+  const submitRun = useCallback((score: number, coinsEarned: number, bestCombo: number, perfectsThisRun: number) => { setState((prev) => { const next = { ...prev, bestScore: Math.max(prev.bestScore, score), bestCombo: Math.max(prev.bestCombo, bestCombo), totalPerfects: prev.totalPerfects + perfectsThisRun, totalRuns: prev.totalRuns + 1, coins: prev.coins + coinsEarned }; persist(next); return next }) }, [userId])
+  const unlockSkin = useCallback((skinId: SkinId, cost: number) => { let success = false; setState((prev) => { if (prev.unlockedSkins.includes(skinId) || prev.coins < cost) return prev; success = true; const next = { ...prev, coins: prev.coins - cost, unlockedSkins: [...prev.unlockedSkins, skinId], selectedSkin: skinId }; persist(next); return next }); return success }, [userId])
+  const grantSkin = useCallback((skinId: SkinId) => { setState((prev) => { if (prev.unlockedSkins.includes(skinId)) return prev; const next = { ...prev, unlockedSkins: [...prev.unlockedSkins, skinId] }; persist(next); return next }) }, [userId])
+  const selectSkin = useCallback((skinId: SkinId) => { setState((prev) => { if (!prev.unlockedSkins.includes(skinId)) return prev; const next = { ...prev, selectedSkin: skinId }; persist(next); return next }) }, [userId])
+  const claimDaily = useCallback(() => { let granted = 0; setState((prev) => { const now = Date.now(); if (prev.lastDailyClaim && now - prev.lastDailyClaim < DAY_MS) return prev; const streak = prev.lastDailyClaim && now - prev.lastDailyClaim < DAY_MS * 2 ? Math.min(7, prev.dailyStreak + 1) : 1; granted = dailyRewardFor(streak); const next = { ...prev, coins: prev.coins + granted, lastDailyClaim: now, dailyStreak: streak }; persist(next); return next }); return granted }, [userId])
+  const hydrateFromCloud = useCallback((cloud: { bestScore: number; bestCombo: number; totalPerfects: number; totalRuns: number; coinsBalance: number; selectedSkinId: SkinId; purchasedSkinIds: SkinId[] }) => { setState((prev) => { const next = { ...prev, bestScore: Math.max(prev.bestScore, cloud.bestScore), bestCombo: Math.max(prev.bestCombo, cloud.bestCombo), totalPerfects: Math.max(prev.totalPerfects, cloud.totalPerfects), totalRuns: Math.max(prev.totalRuns, cloud.totalRuns), coins: Math.max(prev.coins, cloud.coinsBalance), selectedSkin: cloud.selectedSkinId, unlockedSkins: Array.from(new Set([...prev.unlockedSkins, ...cloud.purchasedSkinIds, cloud.selectedSkinId])) }; persist(next); return next }) }, [userId])
+  const claimWelcome = useCallback(() => { let granted = 0; setState((prev) => { if (prev.welcomeClaimed) return prev; granted = WELCOME_REWARD; const next = { ...prev, coins: prev.coins + WELCOME_REWARD, welcomeClaimed: true }; persist(next); return next }); return granted }, [userId])
   return { state, hydrated, update, submitRun, hydrateFromCloud, unlockSkin, grantSkin, selectSkin, claimDaily, claimWelcome }
 }
