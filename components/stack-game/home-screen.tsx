@@ -45,8 +45,7 @@ export function HomeScreen({
 
   return (
     <div
-      className="relative mx-auto flex h-[100dvh] w-full max-w-md flex-col overflow-y-auto overflow-x-hidden bg-[#0b1024] text-slate-100 shadow-2xl"
-      style={{ borderLeft: "5px solid #071957", borderRight: "5px solid #071957" }}
+      className="relative mx-auto flex h-[100dvh] w-full max-w-[26rem] flex-col overflow-y-auto overflow-x-hidden bg-[#0b1024] text-slate-100 shadow-2xl md:my-6 md:h-[calc(100dvh-3rem)] md:min-h-[580px] md:max-h-[900px] md:max-w-5xl md:rounded-[2rem] md:border md:border-white/10 md:shadow-[0_32px_120px_rgba(0,0,0,0.5)]"
     >
       {/* Decorative floating blocks */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -76,7 +75,7 @@ export function HomeScreen({
       </div>
 
       {/* Top bar: coins + best + best combo */}
-      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-6"><button onClick={onProfile} className="rounded-full bg-white/[0.07] px-3 py-1.5 text-xs font-bold text-slate-100 shadow-sm ring-1 ring-inset ring-[#071957]/10">Profile</button>
+      <header className="relative z-10 flex items-center justify-between gap-2 px-5 pt-6 md:px-10 md:pt-8"><button onClick={onProfile} className="rounded-full bg-white/[0.07] px-3 py-1.5 text-xs font-bold text-slate-100 shadow-sm ring-1 ring-inset ring-[#071957]/10">Profile</button>
         <div className="flex items-center gap-2 rounded-full bg-white/[0.07] px-3 py-1.5 text-slate-100 shadow-sm backdrop-blur-sm ring-1 ring-inset ring-[#071957]/10">
           <Coins size={16} className="text-amber-300" aria-hidden />
           <span className="text-sm font-semibold tabular-nums">{storage.coins}</span>
@@ -96,14 +95,14 @@ export function HomeScreen({
       </header>
 
       {/* Title + tower */}
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-6 px-6">
+      <main className="relative z-10 grid flex-1 grid-cols-1 content-center items-center gap-6 px-6 py-6 md:grid-cols-[0.95fr_1.05fr] md:gap-12 md:px-12 md:py-10 lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center text-center md:items-start md:text-left"
         >
-          <div className="relative mb-6 h-32 w-40">
+          <div className="relative mb-6 h-32 w-40 md:mb-10 md:scale-125">
             {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
@@ -123,14 +122,15 @@ export function HomeScreen({
             ))}
           </div>
 
-          <h1 className="text-center text-4xl font-black tracking-tight text-balance text-slate-100">Stack Rush</h1>
-          <p className="mt-2 text-center text-sm font-medium text-slate-100/70">
+          <h1 className="text-center text-4xl font-black tracking-tight text-balance text-slate-100 md:text-left md:text-6xl">Stack Rush</h1>
+          <p className="mt-2 text-center text-sm font-medium text-slate-100/70 md:text-left md:text-base">
             Tap to drop. Perfect the stack. Reach the sky.
           </p>
         </motion.div>
 
-        {/* Daily / welcome reward card */}
-        <div className="w-full max-w-xs">
+        <section className="flex w-full flex-col items-center gap-3 md:max-w-lg md:justify-self-center md:items-stretch">
+          {/* Daily / welcome reward card */}
+          <div className="w-full max-w-xs md:max-w-none">
           <DailyRewardCard
             storage={storage}
             onClaimDaily={onClaimDaily}
@@ -147,18 +147,18 @@ export function HomeScreen({
           transition={{ delay: 0.2, duration: 0.4 }}
           whileTap={{ scale: 0.96 }}
           onClick={onPlay}
-          className="group relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#7657ff] to-[#5b35e8] font-bold text-white shadow-[0_10px_30px_-8px_rgba(23,105,238,0.55)] transition-shadow hover:shadow-[0_10px_50px_-8px_rgba(20,184,166,0.9)]"
+          className="group relative flex h-16 w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-2xl md:max-w-none md:rounded-2xl bg-gradient-to-r from-[#7657ff] to-[#5b35e8] font-bold text-white shadow-[0_10px_30px_-8px_rgba(23,105,238,0.55)] transition-shadow hover:shadow-[0_10px_50px_-8px_rgba(20,184,166,0.9)]"
         >
           <Play size={22} fill="currentColor" aria-hidden />
           <span className="text-lg tracking-wide">PLAY</span>
           <span className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-700 group-hover:translate-x-full" />
         </motion.button>
 
-        <motion.button onClick={onMultiplayer} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff5b4d] to-[#ff4035] font-bold text-white shadow-lg"><Users size={18} aria-hidden /><span>Compete with friends</span></motion.button>
-        <div className="flex w-full max-w-xs gap-3"><motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><span>ZEN</span></motion.button><motion.button onClick={onTimed} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><span>TIMED</span><span className="text-xs font-normal text-cyan-200/70">60 sec</span></motion.button></div>
+        <motion.button onClick={onMultiplayer} whileTap={{ scale: 0.97 }} className="flex h-14 w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff5b4d] to-[#ff4035] font-bold text-white shadow-lg md:max-w-none"><Users size={18} aria-hidden /><span>Compete with friends</span></motion.button>
+        <div className="flex w-full max-w-xs gap-3 md:max-w-none"><motion.button onClick={onZen} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><span>ZEN</span></motion.button><motion.button onClick={onTimed} whileTap={{ scale: 0.97 }} className="flex h-14 flex-1 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><span>TIMED</span><span className="text-xs font-normal text-cyan-200/70">60 sec</span></motion.button></div>
 
         {/* Secondary actions */}
-        <div className="grid w-full max-w-xs grid-cols-2 gap-3">
+        <div className="grid w-full max-w-xs grid-cols-2 gap-3 md:max-w-none">
           <motion.button
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -182,10 +182,11 @@ export function HomeScreen({
             <span>Ranks</span>
   </motion.button>
   <motion.button whileTap={{ scale: 0.97 }} onClick={onAchievements} className="col-span-2 flex h-14 items-center justify-center gap-2 rounded-xl bg-[#20254a] font-bold text-slate-100 ring-1 ring-inset ring-[#071957]/10"><Trophy size={18} aria-hidden /><span>Achievements</span></motion.button>
-  </div>
-  </main>
+        </div>
+        </section>
+      </main>
 
-      <footer className="relative z-10 pb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-slate-100/45">
+      <footer className="relative z-10 pb-6 md:pb-8 text-center text-xs font-medium uppercase tracking-[0.2em] text-slate-100/45">
         v1.0 · Stack Rush
       </footer>
     </div>
