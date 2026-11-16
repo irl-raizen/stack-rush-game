@@ -1,9 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Play, Palette, Trophy, Coins, Flame, Users } from "lucide-react"
+import { Play, Palette, Trophy, Coins, Flame, Users, ArrowRight, Sparkles } from "lucide-react"
 import { SKINS } from "@/lib/skins"
 import type { GameStorage } from "@/hooks/use-game-storage"
+import type { SeasonProgress } from "@/lib/season"
 import { DailyRewardCard } from "./daily-reward-card"
 import { DailyChallengeCard } from "./daily-challenge-card"
 import { DailyMissionCard } from "./daily-mission-card"
@@ -15,6 +16,8 @@ interface HomeScreenProps {
   onTimed: () => void
   onSkins: () => void
   onLeaderboard: () => void
+  onSeason: () => void
+  seasonProgress: SeasonProgress | null
   onAchievements: () => void
   onMultiplayer: () => void
   onProfile: () => void
@@ -32,6 +35,8 @@ export function HomeScreen({
   onTimed,
   onSkins,
   onLeaderboard,
+  onSeason,
+  seasonProgress,
   onAchievements,
   onMultiplayer,
   onProfile,
@@ -42,6 +47,10 @@ export function HomeScreen({
   onClaimDailyMission,
 }: HomeScreenProps) {
   const skin = SKINS[storage.selectedSkin]
+  const nextSeasonMilestone = seasonProgress?.milestones.find((milestone) => !milestone.unlocked)
+  const finalSeasonMilestone = seasonProgress?.milestones.at(-1)
+  const seasonTarget = nextSeasonMilestone?.targetXp ?? finalSeasonMilestone?.targetXp ?? 1
+  const seasonProgressPercent = seasonProgress ? Math.min(100, (seasonProgress.xp / seasonTarget) * 100) : 0
 
   return (
     <div
@@ -138,6 +147,27 @@ export function HomeScreen({
           />
           <DailyChallengeCard storage={storage} onPlay={onDailyChallenge} onClaim={onClaimDailyChallenge} />
           <DailyMissionCard storage={storage} onClaim={onClaimDailyMission} />
+          <button
+            type="button"
+            onClick={onSeason}
+            aria-label={`Open season rewards${seasonProgress ? ` for ${seasonProgress.label}, ${seasonProgress.xp.toLocaleString()} XP` : ""}`}
+            className="mt-3 w-full rounded-2xl border border-cyan-200/15 bg-gradient-to-r from-[#162745] to-[#171c38] p-3.5 text-left transition hover:border-cyan-200/30 hover:from-[#1a3155]"
+          >
+            <span className="flex items-center gap-3">
+              <span className="rounded-xl bg-cyan-200/10 p-2 text-cyan-200"><Sparkles size={17} aria-hidden /></span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-cyan-100">Season track</span>
+                  <span className="text-xs font-bold tabular-nums text-white">{seasonProgress ? `${seasonProgress.xp.toLocaleString()} XP` : "Open"}</span>
+                </span>
+                <span className="mt-0.5 block truncate text-xs text-slate-300/65">{seasonProgress?.label ?? "Monthly rewards and progress"}</span>
+                <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <span className="block h-full rounded-full bg-gradient-to-r from-cyan-300 to-amber-300 transition-[width]" style={{ width: `${seasonProgressPercent}%` }} />
+                </span>
+              </span>
+              <ArrowRight size={16} className="shrink-0 text-cyan-100/70" aria-hidden />
+            </span>
+          </button>
         </div>
 
         {/* Play button */}
