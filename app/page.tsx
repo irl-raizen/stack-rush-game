@@ -269,7 +269,6 @@ export default function Page() {
         {screen === "leaderboard" && (
           <LeaderboardScreen
             key="leaderboard"
-            userBest={state.bestScore}
             onBack={() => setScreen("home")}
           />
         )}
