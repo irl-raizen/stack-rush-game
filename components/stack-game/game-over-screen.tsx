@@ -9,6 +9,7 @@ interface GameOverScreenProps {
   score: number
   bestScore: number
   bestCombo: number
+  perfects: number
   coinsEarned: number
   isNewBest: boolean
   onRetry: () => void
@@ -22,6 +23,7 @@ export function GameOverScreen({
   score,
   bestScore,
   bestCombo,
+  perfects,
   coinsEarned,
   isNewBest,
   onRetry,
@@ -98,28 +100,35 @@ export function GameOverScreen({
             <p className="mt-1 text-7xl font-bold tabular-nums">{score}</p>
           </motion.div>
 
-          {/* Stats row */}
-          <div className="mt-6 grid w-full grid-cols-3 gap-2">
-            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-2 py-3 ring-1 ring-inset ring-white/10">
-              <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-white/50">
-                <Trophy size={11} className="text-amber-300" aria-hidden />
+          {/* Run recap */}
+          <div className="mt-6 grid w-full grid-cols-4 gap-1.5">
+            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-1.5 py-3 ring-1 ring-inset ring-white/10">
+              <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-white/55">
+                <Trophy size={11} className="shrink-0 text-amber-300" aria-hidden />
                 <span>Best</span>
               </div>
-              <p className="mt-1 text-xl font-bold tabular-nums">{bestScore}</p>
+              <p className="mt-1 text-lg font-bold tabular-nums">{bestScore}</p>
             </div>
-            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-2 py-3 ring-1 ring-inset ring-white/10">
-              <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-white/50">
-                <Flame size={11} className="text-orange-300" aria-hidden />
+            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-1.5 py-3 ring-1 ring-inset ring-white/10">
+              <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-white/55">
+                <Flame size={11} className="shrink-0 text-orange-300" aria-hidden />
                 <span>Combo</span>
               </div>
-              <p className="mt-1 text-xl font-bold tabular-nums">x{bestCombo}</p>
+              <p className="mt-1 text-lg font-bold tabular-nums">x{bestCombo}</p>
             </div>
-            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-2 py-3 ring-1 ring-inset ring-white/10">
-              <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-white/50">
-                <Coins size={11} className="text-amber-300" aria-hidden />
+            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-1.5 py-3 ring-1 ring-inset ring-white/10">
+              <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-white/55">
+                <Sparkles size={11} className="shrink-0 text-cyan-300" aria-hidden />
+                <span>Perfect</span>
+              </div>
+              <p className="mt-1 text-lg font-bold tabular-nums">{perfects}</p>
+            </div>
+            <div className="flex flex-col items-center rounded-2xl bg-white/5 px-1.5 py-3 ring-1 ring-inset ring-white/10">
+              <div className="flex items-center gap-1 text-[9px] font-medium uppercase tracking-wide text-white/55">
+                <Coins size={11} className="shrink-0 text-amber-300" aria-hidden />
                 <span>Coins</span>
               </div>
-              <p className="mt-1 text-xl font-bold tabular-nums">+{coinsEarned}</p>
+              <p className="mt-1 text-lg font-bold tabular-nums">+{coinsEarned}</p>
             </div>
           </div>
 

@@ -129,6 +129,13 @@ export const sfx = {
     noise(0.28, { vol: 0.14, band: { freq: 900, q: 0.9 } })
     tone(280, 0.2, { type: "sine", vol: 0.12, sweepTo: 140 })
   },
+  /** Ascending chime for a combo milestone. */
+  streak(combo: number) {
+    const root = combo >= 10 ? 880 : combo >= 5 ? 740 : 620
+    tone(root, 0.12, { type: "triangle", vol: 0.2 })
+    tone(root * 1.25, 0.14, { type: "triangle", vol: 0.18, delay: 0.07 })
+    tone(root * 1.5, 0.2, { type: "sine", vol: 0.18, delay: 0.14 })
+  },
   /** Short stinger layered on perfect to emphasize multiplier jumps. */
   multiplier(tier: 2 | 3 | 5) {
     const root = tier === 5 ? 920 : tier === 3 ? 760 : 640

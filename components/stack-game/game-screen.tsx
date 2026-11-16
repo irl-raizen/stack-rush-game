@@ -46,6 +46,7 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
   )
   const [perfectFlashId, setPerfectFlashId] = useState(0)
   const [scoreGainPopup, setScoreGainPopup] = useState<{ id: number; value: number } | null>(null)
+  const [comboMilestone, setComboMilestone] = useState<{ id: number; combo: number } | null>(null)
 
   const skin = SKINS[skinId]
 
@@ -61,11 +62,20 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
         perfectsRef.current += 1
         sfx.perfect(r.combo)
         sfx.coin()
-        if (r.multiplier === 2 || r.multiplier === 3 || r.multiplier === 5) sfx.multiplier(r.multiplier)
+        const reachedMilestone = r.combo === 3 || r.combo === 5 || r.combo === 10 || r.combo === 15
+        if (reachedMilestone) {
+          setComboMilestone({ id: Date.now(), combo: r.combo })
+          sfx.streak(r.combo)
+          if (hapticsEnabled && typeof navigator !== "undefined" && "vibrate" in navigator) {
+            navigator.vibrate?.(r.combo >= 10 ? [18, 28, 18, 28, 30] : [18, 24, 18])
+          }
+        } else if (r.multiplier === 2 || r.multiplier === 3 || r.multiplier === 5) {
+          sfx.multiplier(r.multiplier)
+        }
         setPerfectFloat({ id: Date.now(), tier: r.multiplier })
         setPerfectFlashId((n) => n + 1)
         if (r.scoreGain > 0) setScoreGainPopup({ id: Date.now(), value: r.scoreGain })
-        if (hapticsEnabled && typeof navigator !== "undefined" && "vibrate" in navigator) {
+        if (!reachedMilestone && hapticsEnabled && typeof navigator !== "undefined" && "vibrate" in navigator) {
           // Tiered haptic: crisper bumps as the multiplier climbs.
           const pattern =
             r.multiplier === 5 ? [12, 30, 12, 30, 24] : r.multiplier === 3 ? [12, 30, 18] : [30]
@@ -273,6 +283,26 @@ export function GameScreen({ skinId, mode = "classic", hapticsEnabled, onExit, o
           </motion.span>
         </div>
       </header>
+
+      <AnimatePresence>
+        {comboMilestone && (
+          <motion.div
+            key={comboMilestone.id}
+            initial={{ opacity: 0, y: 14, scale: 0.78 }}
+            animate={{ opacity: [0, 1, 1, 0], y: [14, 0, 0, -12], scale: [0.78, 1, 1, 0.94] }}
+            exit={{ opacity: 0, y: -12, scale: 0.94 }}
+            transition={{ duration: 1.45, times: [0, 0.16, 0.78, 1], ease: "easeOut" }}
+            onAnimationComplete={() => setComboMilestone(null)}
+            role="status"
+            aria-live="polite"
+            className="pointer-events-none absolute left-1/2 top-[30%] z-20 -translate-x-1/2 rounded-2xl border border-amber-200/40 bg-slate-950/80 px-5 py-3 text-center shadow-[0_0_44px_rgba(251,191,36,0.24)] backdrop-blur-md"
+          >
+            <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-amber-200">Combo milestone</span>
+            <span className="mt-1 block text-xl font-black tabular-nums text-white">{comboMilestone.combo} perfect drops</span>
+            <span className="mt-0.5 block text-xs font-semibold text-cyan-200">{comboMilestone.combo >= 10 ? "LEGENDARY STREAK" : comboMilestone.combo >= 5 ? "UNSTOPPABLE" : "MULTIPLIER ACTIVE"}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Perfect radial flash vignette */}
       <AnimatePresence>
