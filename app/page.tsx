@@ -285,6 +285,7 @@ export default function Page() {
           score={lastRun.score}
           bestScore={state.bestScore}
           bestCombo={lastRun.bestCombo}
+          perfects={lastRun.perfects}
           coinsEarned={lastRun.coinsEarned}
           isNewBest={lastRun.isNewBest}
           onRetry={startGame}
