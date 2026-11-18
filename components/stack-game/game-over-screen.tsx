@@ -1,7 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
-import { Coins, Flame, Home, RotateCcw, Share2, Sparkles, Trophy } from "lucide-react"
+import { Check, Coins, Flame, Home, RotateCcw, Share2, Sparkles, Trophy } from "lucide-react"
 import { SKINS, type SkinId } from "@/lib/skins"
 
 interface GameOverScreenProps {
@@ -32,30 +33,37 @@ export function GameOverScreen({
   multiplayerResult,
 }: GameOverScreenProps) {
   const skin = SKINS[skinId]
-
-  const apkDownloadUrl = "https://drive.google.com/uc?export=download&id=1Pf7uqNDt9lIjPhpm_HDSerfBM4Jtn1IK"
-  const appDeepLink = "stackrush://open"
-
-  const openStackRush = () => {
-    if (typeof window === "undefined") return
-    const fallback = window.setTimeout(() => { window.location.assign(apkDownloadUrl) }, 1400)
-    const cancelFallback = () => window.clearTimeout(fallback)
-    document.addEventListener("visibilitychange", cancelFallback, { once: true })
-    window.location.assign(appDeepLink)
-  }
+  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "shared" | "unavailable">("idle")
 
   const handleShare = async () => {
-    const shareText = `I scored ${score} in Stack Rush: Perfect Tower! Can you beat me?`
+    const shareText = `I scored ${score} in Stack Rush: Perfect Tower!\nBest: ${bestScore} · Best combo: x${bestCombo} · Perfect stacks: ${perfects}\nCan you beat me?`
+    const shareData = { title: "Stack Rush: Perfect Tower", text: shareText, url: window.location.href }
+
     try {
-      if (typeof navigator !== "undefined" && "share" in navigator) {
-        await (navigator as Navigator).share({ title: "Stack Rush", text: shareText, url: window.location.href })
-        openStackRush()
-      } else if (typeof navigator !== "undefined") {
-        await window.navigator.clipboard?.writeText(shareText)
+      if (typeof navigator.share === "function") {
+        await navigator.share(shareData)
+        setShareStatus("shared")
+        return
       }
-    } catch {
-      /* user cancelled share */
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(`${shareText}\n${window.location.href}`)
+        setShareStatus("copied")
+        return
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return
+
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n${window.location.href}`)
+        setShareStatus("copied")
+        return
+      } catch {
+        setShareStatus("unavailable")
+      }
     }
+
+    setShareStatus("unavailable")
   }
 
   return (
@@ -171,10 +179,13 @@ export function GameOverScreen({
                 onClick={handleShare}
                 className="flex h-12 items-center justify-center gap-2 rounded-xl bg-[#d9d6ff] font-bold text-[#071957] ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/15"
               >
-                <Share2 size={16} aria-hidden />
-                <span>Share</span>
+                {shareStatus === "copied" || shareStatus === "shared" ? <Check size={16} aria-hidden /> : <Share2 size={16} aria-hidden />}
+                <span>{shareStatus === "copied" ? "Copied!" : shareStatus === "shared" ? "Shared!" : "Share"}</span>
               </motion.button>
             </div>
+            <p className="min-h-5 text-center text-xs text-white/60" role="status" aria-live="polite">
+              {shareStatus === "copied" ? "Run summary copied to clipboard." : shareStatus === "shared" ? "Run summary shared." : shareStatus === "unavailable" ? "Sharing isn’t available in this browser." : ""}
+            </p>
           </div>
         </div>
       </motion.div>
