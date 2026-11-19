@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
-import { claimDailyReward, getPlayerCloudProfile, purchaseSkin, submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
+import { claimDailyReward, claimSeasonReward, getPlayerCloudProfile, getSeasonProgress, purchaseSkin, submitGameRun as submitGameRunToCloud } from "@/app/actions/game"
 import { finishRoom } from "@/app/actions/multiplayer"
 import { SplashScreen } from "@/components/stack-game/splash-screen"
 import { HomeScreen } from "@/components/stack-game/home-screen"
@@ -17,13 +17,15 @@ import { LeaderboardScreen } from "@/components/stack-game/leaderboard-screen"
 import { InterstitialAd } from "@/components/stack-game/interstitial-ad"
 import { MultiplayerScreen } from "@/components/stack-game/multiplayer-screen"
 import { ProfileScreen } from "@/components/stack-game/profile-screen"
+import { SeasonPassScreen } from "@/components/stack-game/season-pass-screen"
+import type { SeasonProgress } from "@/lib/season"
 import { useGameStorage } from "@/hooks/use-game-storage"
 import { meetsSkillLock, SKINS } from "@/lib/skins"
 import { ACHIEVEMENTS, achievementProgress } from "@/lib/achievements"
 import { dailyChallengeKey, DAILY_CHALLENGE_REWARD, isDailyChallengeComplete } from "@/lib/daily-challenge"
 import { DAILY_MISSION_REWARD, DAILY_MISSION_TARGET, missionKey } from "@/lib/missions"
 
-type Screen = "splash" | "home" | "tutorial" | "achievements" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile"
+type Screen = "splash" | "home" | "tutorial" | "achievements" | "game" | "gameover" | "skins" | "leaderboard" | "multiplayer" | "profile" | "season"
 
 /** Show the interstitial every N completed runs. */
 const INTERSTITIAL_EVERY = 4
@@ -41,6 +43,7 @@ export default function Page() {
     isNewBest: boolean
   } | null>(null)
   const [showAd, setShowAd] = useState(false)
+  const [seasonProgress, setSeasonProgress] = useState<SeasonProgress | null>(null)
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null)
   const [multiplayerResult, setMultiplayerResult] = useState<{ winner: "host" | "guest" | "draw"; hostScore: number; guestScore: number; hostName?: string; guestName?: string } | null>(null)
   const [multiplayerNames, setMultiplayerNames] = useState<{ hostName?: string; guestName?: string } | null>(null)
@@ -61,9 +64,13 @@ export default function Page() {
   useEffect(() => {
     if (!session?.user?.id || !hydrated) return
     let cancelled = false
+    setSeasonProgress(null)
     void getPlayerCloudProfile().then((profile) => {
       if (cancelled || !profile.stats) return
       hydrateFromCloud({ ...profile.stats, selectedSkinId: profile.stats.selectedSkinId as typeof state.selectedSkin, purchasedSkinIds: profile.purchasedSkinIds as typeof state.unlockedSkins[number][] })
+    }).catch(() => undefined)
+    void getSeasonProgress().then((progress) => {
+      if (!cancelled) setSeasonProgress(progress)
     }).catch(() => undefined)
     return () => { cancelled = true }
   }, [session?.user?.id, hydrated, hydrateFromCloud])
@@ -96,7 +103,7 @@ export default function Page() {
   const challengePatch = { dailyChallengeKey: today, dailyChallengeScore: challengeScore, dailyMissionKey: missionToday, dailyMissionProgress: missionProgress }
       if (newlyCompleted.length) update({ ...challengePatch, claimedAchievements: [...state.claimedAchievements, ...newlyCompleted], coins: state.coins + coinsEarned + newlyCompleted.reduce((sum, id) => sum + (ACHIEVEMENTS.find((achievement) => achievement.id === id)?.reward ?? 0), 0) })
       else update(challengePatch)
-      void submitGameRunToCloud({ score, combo: bestCombo, perfects, coinsEarned, region: "US" }).catch(() => undefined)
+      void submitGameRunToCloud({ score, combo: bestCombo, perfects, coinsEarned, region: "US" }).then(() => getSeasonProgress()).then(setSeasonProgress).catch(() => undefined)
       setLastRun({ score, coinsEarned, bestCombo, perfects, isNewBest })
 
       // Keep ad cadence inside the account-scoped game profile so switching users cannot carry over run counts.
@@ -147,6 +154,16 @@ export default function Page() {
       return false
     }
   }
+  const handleSeasonRewardClaim = async (tier: number) => {
+    const result = await claimSeasonReward(tier)
+    update({ coins: result.coinsBalance })
+    try {
+      setSeasonProgress(await getSeasonProgress())
+    } catch {
+      // Keep the local coin balance in sync even if the progress refresh is temporarily unavailable.
+    }
+  }
+
   const startDailyChallenge = () => {
     setGameMode("classic")
     setMultiplayerResult(null)
@@ -233,6 +250,8 @@ export default function Page() {
             onTimed={() => { setGameMode("timed"); setRunKey((k) => k + 1); setScreen("game") }}
             onSkins={() => setScreen("skins")}
             onLeaderboard={() => setScreen("leaderboard")}
+            onSeason={() => setScreen("season")}
+            seasonProgress={seasonProgress}
             onAchievements={() => setScreen("achievements")}
             onMultiplayer={() => setScreen("multiplayer")}
             onProfile={() => setScreen("profile")}
@@ -270,6 +289,16 @@ export default function Page() {
           <LeaderboardScreen
             key="leaderboard"
             onBack={() => setScreen("home")}
+          />
+        )}
+
+        {screen === "season" && (
+          <SeasonPassScreen
+            key="season"
+            progress={seasonProgress}
+            coins={state.coins}
+            onBack={() => setScreen("home")}
+            onClaim={handleSeasonRewardClaim}
           />
         )}
 
